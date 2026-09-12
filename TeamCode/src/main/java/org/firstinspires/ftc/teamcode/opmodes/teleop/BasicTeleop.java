@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
-public class StateMachineTeleOp extends OpMode {
+public class BasicTeleop extends OpMode {
     public DcMotor bl;
     public DcMotor br;
     public DcMotor fr;
@@ -29,7 +29,7 @@ public class StateMachineTeleOp extends OpMode {
     double y = gamepad1.left_stick_y;
     double z = gamepad1.right_stick_x;
 
-    bl.setPower(-y-x+z);
+    bl.setPower(y+x-z);
     br.setPower(y-x+z);
     fr.setPower(y+x+z);
     fl.setPower(-y+x+z);
