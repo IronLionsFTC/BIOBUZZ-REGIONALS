@@ -17,6 +17,7 @@ import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 
 @Autonomous
 public class ExampleIvyAuto extends OpMode {
@@ -53,6 +54,8 @@ public class ExampleIvyAuto extends OpMode {
         );
     }
 
+
+
     @Override
     public void init() {
         Scheduler.reset();
@@ -78,5 +81,13 @@ public class ExampleIvyAuto extends OpMode {
         telemetry.addData("Heading", Math.toDegrees(follower.pose().heading()));
         telemetry.addData("Follower Mode", follower.mode());
         telemetry.update();
+    }
+
+    // in your autonomous
+
+
+    @Override
+    public void stop() {
+        FollowerStorage.autonomousEndPose = follower.pose(); //saves your position in that file
     }
 }

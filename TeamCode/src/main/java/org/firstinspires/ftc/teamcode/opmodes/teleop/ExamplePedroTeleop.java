@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 
 @TeleOp(name = "Example TeleOp")
 public class ExamplePedroTeleop extends OpMode {
@@ -17,6 +18,12 @@ public class ExamplePedroTeleop extends OpMode {
         follower = Constants.create(hardwareMap);
     }
 
+
+    @Override
+    public void start(){
+        follower.setPose(FollowerStorage.autonomousEndPose);
+        follower.update();
+    }
     @Override
     public void loop() {
         follower.manual(
@@ -41,6 +48,7 @@ public class ExamplePedroTeleop extends OpMode {
         // Math.toDegrees() is a built-in java method
 
         if (gamepad1.bWasPressed()){
+
 
         }
     }
