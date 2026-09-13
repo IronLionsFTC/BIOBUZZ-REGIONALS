@@ -26,31 +26,58 @@ public class ExampleIvyAuto extends OpMode {
 
     // Poses
     private final Pose startPose = poseFactory.of(8.282926829268291, 8.327642276422754, 90);
-    private final Pose firstPose = poseFactory.of(98.245, 58.088, 100);
-    private final Pose secondPose = poseFactory.of(72.992, 96.998, 200);
-    private final Pose lastPose = poseFactory.of(26.1, 48.7, 46);
-    private final Pose controlPoint1 = poseFactory.of(75.00894308943089,13.727642276422763,140);
+    private final Pose southShootingPose = poseFactory.of(46.2, 23.8, 260);
+    private final Pose redBallSpike = poseFactory.of(9.1, 8.7, 180);
+    private final Pose firstFlower = poseFactory.of(11, 45, 190);
+    private final Pose northShootingPose = poseFactory.of(48,118,100);
+    private final Pose secondFlower = poseFactory.of(45.8, 131.2, 100);
+    private final Pose park = poseFactory.of(9.7, 119, 0);
 
 
     // Path methods
-    private Path firstPoint() {
-        return curve(startPose, controlPoint1, firstPose).linear(startPose, firstPose);
+    private Path shootPreload() {
+        return line(startPose, southShootingPose).linear(startPose, southShootingPose);
     }
 
-    private Path secondPoint(){
-        return line(firstPose, secondPose).linear(firstPose, secondPose);
+    private Path intakeSpike(){
+        return line(southShootingPose, redBallSpike).linear(southShootingPose, redBallSpike);
     }
 
-    private Path thirdPoint(){
-        return line(secondPose, lastPose).linear(secondPose, lastPose);
+    private Path shootSpikeBalls(){
+        return line(redBallSpike, southShootingPose).linear(redBallSpike, southShootingPose);
+    }
+
+    private Path intakeFirstFlower(){
+        return line(southShootingPose, firstFlower).linear(southShootingPose, firstFlower);
+    }
+
+    private Path shootFirstFlower(){
+        return line(firstFlower, northShootingPose).linear(firstFlower, northShootingPose);
+    }
+
+    private Path intakeSecondFlower(){
+        return line(northShootingPose, secondFlower).linear(northShootingPose, secondFlower);
+    }
+
+    private Path shootSecondFlower(){
+        return line(secondFlower, northShootingPose).linear(secondFlower, northShootingPose);
+    }
+
+    private Path park(){
+        return line(northShootingPose, park).linear(northShootingPose, park);
     }
 
     private Command autoRoutine() {
         return sequential(
-                follow(follower, firstPoint()),
+                follow(follower, shootPreload()),
                 // Add mechanism commands here.
-                follow(follower, secondPoint()),
-                follow(follower, thirdPoint())
+                follow(follower, intakeSpike()),
+                follow(follower, shootSpikeBalls()),
+                follow(follower, intakeFirstFlower()),
+                follow(follower, shootFirstFlower()),
+                follow(follower, intakeSecondFlower()),
+                follow(follower, shootSecondFlower()),
+                follow(follower, park())
         );
     }
 

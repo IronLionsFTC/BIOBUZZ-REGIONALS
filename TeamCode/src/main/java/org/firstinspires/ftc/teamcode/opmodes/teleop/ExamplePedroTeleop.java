@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 
-@TeleOp(name = "Example TeleOp")
+@TeleOp
 public class ExamplePedroTeleop extends OpMode {
 
     private Follower follower;
