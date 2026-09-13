@@ -8,23 +8,35 @@ import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.groups.Groups.deadline;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 @Autonomous
 public class ExampleIvyAuto extends OpMode {
+    private Intake intake;
     private Follower follower;
+    private DcMotorEx intakeMotor;
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
-    // Poses
+
+
+
+    // ================= //
+    //       POSES
+    // ================= //
     private final Pose startPose = poseFactory.of(8.282926829268291, 8.327642276422754, 90);
     private final Pose southShootingPose = poseFactory.of(46.2, 23.8, 260);
     private final Pose redBallSpike = poseFactory.of(9.1, 8.7, 180);
@@ -34,7 +46,11 @@ public class ExampleIvyAuto extends OpMode {
     private final Pose park = poseFactory.of(9.7, 119, 0);
 
 
-    // Path methods
+    // ==================== //
+    // PATHS LISTED BELOW
+    // ==================== //
+
+
     private Path shootPreload() {
         return line(startPose, southShootingPose).linear(startPose, southShootingPose);
     }
@@ -67,17 +83,37 @@ public class ExampleIvyAuto extends OpMode {
         return line(northShootingPose, park).linear(northShootingPose, park);
     }
 
+
+    // ============== //
+    // IVY COMMANDS
+    // ============= //
+
     private Command autoRoutine() {
         return sequential(
                 follow(follower, shootPreload()),
-                // Add mechanism commands here.
-                follow(follower, intakeSpike()),
+                // Add mechanism commands here, below is an intake example from Intake.java
+
+                deadline(
+                        follow(follower, intakeSpike()),
+                        intake.intake()
+                ), //deadline states that the second one finishes when the first finishes. (thus we dont get caught in a loop of infinite intake)
                 follow(follower, shootSpikeBalls()),
-                follow(follower, intakeFirstFlower()),
+
+                deadline(
+                        follow(follower, intakeFirstFlower()),
+                        intake.intake()
+                ),
                 follow(follower, shootFirstFlower()),
-                follow(follower, intakeSecondFlower()),
+
+                deadline(
+                        follow(follower, intakeSecondFlower()),
+                        intake.intake()
+                ),
+
                 follow(follower, shootSecondFlower()),
+
                 follow(follower, park())
+
         );
     }
 
@@ -90,6 +126,8 @@ public class ExampleIvyAuto extends OpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
         follower.update();
+        intake = new Intake(hardwareMap); // Sets my intake as the intake from the hardwareMap
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
     }
 
     @Override
@@ -99,6 +137,7 @@ public class ExampleIvyAuto extends OpMode {
 
     @Override
     public void loop() {
+
         follower.update();
         Scheduler.execute();
         // add your other methods needed in the loop here
@@ -107,6 +146,7 @@ public class ExampleIvyAuto extends OpMode {
         telemetry.addData("Y", follower.pose().y());
         telemetry.addData("Heading", Math.toDegrees(follower.pose().heading()));
         telemetry.addData("Follower Mode", follower.mode());
+        telemetry.addData("Intaking:", intakeMotor.isMotorEnabled() );
         telemetry.update();
     }
 

@@ -12,6 +12,8 @@ public class Intake {
         motor = hardwareMap.get(DcMotorEx.class, "intake");
     }
 
+
+
     public Command intake() {
         return Command.build()
                 .setExecute(() -> motor.setPower(1.0))
