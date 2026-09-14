@@ -28,9 +28,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
 @Autonomous
 public class ExampleIvyAuto extends OpMode {
-    private Intake intake;
+  //  private Intake intake;
     private Follower follower;
-    private DcMotorEx intakeMotor;
+  //  private DcMotorEx intakeMotor;
     private final PoseFactory poseFactory = PoseFactory.degrees();
 
 
@@ -76,7 +76,7 @@ public class ExampleIvyAuto extends OpMode {
     private Path intakeSecondFlower(){
         return line(northShootingPose, southFlower).linear(northShootingPose, southFlower);
     }
-    
+
     private Path shootSecondFlower(){
         return line(southFlower, southShootingPose).linear(southFlower, southShootingPose);
     }
@@ -94,20 +94,20 @@ public class ExampleIvyAuto extends OpMode {
                 // Add mechanism commands here, below is an intake example from Intake.java
 
                 deadline(
-                        follow(follower, intakeSpike()),
-                        intake.intake()
+                        follow(follower, intakeSpike())
+                       // intake.intake()
                 ), //deadline states that the second one finishes when the first finishes. (thus we dont get caught in a loop of infinite intake)
                 follow(follower, shootSpikeBalls()),
 
                 deadline(
-                        follow(follower, intakeNorthFlower()),
-                        intake.intake()
+                        follow(follower, intakeNorthFlower())
+                       // intake.intake()
                 ),
                 follow(follower, shootNorthFlower()),
 
                 deadline(
-                        follow(follower, intakeSecondFlower()),
-                        intake.intake()
+                        follow(follower, intakeSecondFlower())
+                       // intake.intake()
                 ),
 
                 follow(follower, shootSecondFlower())
@@ -124,8 +124,8 @@ public class ExampleIvyAuto extends OpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(startPose);
         follower.update();
-        intake = new Intake(hardwareMap); // Sets my intake as the intake from the hardwareMap
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
+        // intake = new Intake(hardwareMap); // Sets my intake as the intake from the hardwareMap
+       // intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
     }
 
     @Override
@@ -144,7 +144,7 @@ public class ExampleIvyAuto extends OpMode {
         telemetry.addData("Y", follower.pose().y());
         telemetry.addData("Heading", Math.toDegrees(follower.pose().heading()));
         telemetry.addData("Follower Mode", follower.mode());
-        telemetry.addData("Intaking:", intakeMotor.isMotorEnabled() );
+        // telemetry.addData("Intaking:", intakeMotor.isMotorEnabled() );
         telemetry.update();
     }
 

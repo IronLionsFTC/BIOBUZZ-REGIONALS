@@ -11,6 +11,14 @@ import android.util.Size;
 @TeleOp(name = "Ball Vision Test", group = "Vision")
 public class BallVisionTest extends LinearOpMode {
 
+
+
+    // =============================================
+    //    BALL VISION TEST IS PURELY EXPERIMENTAL
+    // =============================================
+
+
+
     private VisionPortal visionPortal;
     private BallVisionProcessor ballProcessor;
 
