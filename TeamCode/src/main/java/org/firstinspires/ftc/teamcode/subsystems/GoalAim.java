@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.KP_POWER;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.MAX_TURN_POWER;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
@@ -12,10 +15,10 @@ public class GoalAim {
     private double targetY;
 
     // The magnitude u want to turn by
-    private double kP = 0.7;
+    private double kP = KP_POWER;
 
     // Maximum power the robot will turn
-    private double maxTurnPower = 1.0;
+    private double maxTurnPower = MAX_TURN_POWER;
 
     // Whether the aiming is currently active
     private boolean active = false;

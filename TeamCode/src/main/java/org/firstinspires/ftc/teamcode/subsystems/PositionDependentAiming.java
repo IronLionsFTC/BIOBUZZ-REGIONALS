@@ -18,6 +18,11 @@ package org.firstinspires.ftc.teamcode.subsystems;
 // =========================================
 
 
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.NORTH_TARGET_X;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.NORTH_TARGET_Y;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.SOUTH_TARGET_X;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.SOUTH_TARGET_Y;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
@@ -28,16 +33,15 @@ public class PositionDependentAiming {
 
     private boolean active = false;
 
-    // =========================================
-    // CHANGE THESE TO YOUR ACTUAL BUCKET
-    // COORDINATES
-    // =========================================
+    // ===================================
+    //    Points are in Drive Constants
+    // ===================================
 
-    private final double northTargetX = 0;
-    private final double northTargetY = 90;
+    private final double northTargetX = NORTH_TARGET_X;
+    private final double northTargetY = NORTH_TARGET_Y;
 
-    private final double southTargetX = 0;
-    private final double southTargetY = -90;
+    private final double southTargetX = SOUTH_TARGET_X;
+    private final double southTargetY = SOUTH_TARGET_Y;
 
 
     // =========================================

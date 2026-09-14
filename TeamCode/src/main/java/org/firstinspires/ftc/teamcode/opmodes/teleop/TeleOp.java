@@ -8,13 +8,14 @@ import org.firstinspires.ftc.teamcode.commands.Localise;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 import org.firstinspires.ftc.teamcode.subsystems.GoalAim;
+import org.firstinspires.ftc.teamcode.subsystems.PositionDependentAiming;
 
 import static com.pedropathing.api.Paths.line;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends OpMode {
 
     private Follower follower;
-    private GoalAim goalAim;
+    private PositionDependentAiming positionDependentAiming;
 
 
 
@@ -22,7 +23,7 @@ public class TeleOp extends OpMode {
     public void init() {
         follower = Constants.create(hardwareMap);
         Localise.init(follower);
-        goalAim = new GoalAim(follower, 0, 0);
+        positionDependentAiming = new PositionDependentAiming(follower);
     }
 
 
@@ -62,7 +63,7 @@ public class TeleOp extends OpMode {
         // ==================
 
         if (gamepad1.squareWasPressed()) {
-            goalAim.toggle();
+            positionDependentAiming.toggle();
         }
 
         // ==================
@@ -73,8 +74,8 @@ public class TeleOp extends OpMode {
         double strafe = -gamepad1.left_stick_x;
         double turn;
 
-        if (goalAim.isActive()) {
-            turn = goalAim.getTurnPower();
+        if (positionDependentAiming.isActive()) {
+            turn = positionDependentAiming.getTurnPower();
         } else {
             turn = -gamepad1.right_stick_x;
         }
@@ -98,7 +99,7 @@ public class TeleOp extends OpMode {
         telemetry.addData("Robot X", robotPose.x());
         telemetry.addData("Robot Y", robotPose.y());
         telemetry.addData("Robot Heading", Math.toDegrees(robotPose.heading()));
-        telemetry.addData("Robot Target Heading", goalAim.getHeadingError());
+        telemetry.addData("Robot Target Heading", positionDependentAiming.getHeadingError());
 
 
 
