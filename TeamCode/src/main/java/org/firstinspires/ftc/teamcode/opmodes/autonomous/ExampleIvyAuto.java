@@ -20,6 +20,8 @@ import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 
+import static java.util.concurrent.locks.LockSupport.park;
+
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
@@ -40,9 +42,9 @@ public class ExampleIvyAuto extends OpMode {
     private final Pose startPose = poseFactory.of(8.282926829268291, 8.327642276422754, 90);
     private final Pose southShootingPose = poseFactory.of(46.2, 23.8, 260);
     private final Pose redBallSpike = poseFactory.of(9.1, 8.7, 180);
-    private final Pose firstFlower = poseFactory.of(11, 45, 190);
+    private final Pose southFlower = poseFactory.of(11, 45, 190);
     private final Pose northShootingPose = poseFactory.of(48,118,100);
-    private final Pose secondFlower = poseFactory.of(45.8, 131.2, 100);
+    private final Pose northFlower = poseFactory.of(45.8, 131.2, 100);
     private final Pose park = poseFactory.of(9.7, 119, 0);
 
 
@@ -60,28 +62,26 @@ public class ExampleIvyAuto extends OpMode {
     }
 
     private Path shootSpikeBalls(){
-        return line(redBallSpike, southShootingPose).linear(redBallSpike, southShootingPose);
+        return line(redBallSpike, northShootingPose).linear(redBallSpike, northShootingPose);
     }
 
-    private Path intakeFirstFlower(){
-        return line(southShootingPose, firstFlower).linear(southShootingPose, firstFlower);
+    private Path intakeNorthFlower(){
+        return line(northShootingPose, northFlower).linear(southShootingPose, northFlower);
     }
 
-    private Path shootFirstFlower(){
-        return line(firstFlower, northShootingPose).linear(firstFlower, northShootingPose);
+    private Path shootNorthFlower(){
+        return line(northFlower, northShootingPose).linear(northFlower, northShootingPose);
     }
 
     private Path intakeSecondFlower(){
-        return line(northShootingPose, secondFlower).linear(northShootingPose, secondFlower);
+        return line(northShootingPose, southFlower).linear(northShootingPose, southFlower);
     }
 
     private Path shootSecondFlower(){
-        return line(secondFlower, northShootingPose).linear(secondFlower, northShootingPose);
+        return line(southFlower, southShootingPose).linear(southFlower, southShootingPose);
     }
 
-    private Path park(){
-        return line(northShootingPose, park).linear(northShootingPose, park);
-    }
+
 
 
     // ============== //
@@ -100,19 +100,17 @@ public class ExampleIvyAuto extends OpMode {
                 follow(follower, shootSpikeBalls()),
 
                 deadline(
-                        follow(follower, intakeFirstFlower()),
+                        follow(follower, intakeNorthFlower()),
                         intake.intake()
                 ),
-                follow(follower, shootFirstFlower()),
+                follow(follower, shootNorthFlower()),
 
                 deadline(
                         follow(follower, intakeSecondFlower()),
                         intake.intake()
                 ),
 
-                follow(follower, shootSecondFlower()),
-
-                follow(follower, park())
+                follow(follower, shootSecondFlower())
 
         );
     }
