@@ -76,7 +76,7 @@ public class ExampleIvyAuto extends OpMode {
     private Path intakeSecondFlower(){
         return line(northShootingPose, southFlower).linear(northShootingPose, southFlower);
     }
-
+    
     private Path shootSecondFlower(){
         return line(southFlower, southShootingPose).linear(southFlower, southShootingPose);
     }
