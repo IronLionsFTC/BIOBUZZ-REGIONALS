@@ -18,6 +18,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 // =========================================
 
 
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.HALFWAY_POINT;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.NORTH_TARGET_X;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.NORTH_TARGET_Y;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.SOUTH_TARGET_X;
@@ -93,7 +94,7 @@ public class PositionDependentAiming {
 
         Pose robotPose = follower.pose();
 
-        if (robotPose.y() >= 0) {
+        if (robotPose.y() >= HALFWAY_POINT) {
 
             // North side
             goalAim.setTarget(
