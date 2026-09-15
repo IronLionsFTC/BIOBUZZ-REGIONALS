@@ -3,14 +3,16 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.commands.Localise;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
-import org.firstinspires.ftc.teamcode.subsystems.GoalAim;
 import org.firstinspires.ftc.teamcode.subsystems.PositionDependentAiming;
 
 import static com.pedropathing.api.Paths.line;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.AIM_DEADBAND_DEGREES;
+
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends OpMode {
 
@@ -23,6 +25,17 @@ public class TeleOp extends OpMode {
     public void init() {
         follower = Constants.create(hardwareMap);
         Localise.init(follower);
+        hardwareMap.get(DcMotor.class, "frontLeft")
+                .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        hardwareMap.get(DcMotor.class, "frontRight")
+                .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        hardwareMap.get(DcMotor.class, "backLeft")
+                .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        hardwareMap.get(DcMotor.class, "backRight")
+                .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         positionDependentAiming = new PositionDependentAiming(follower);
     }
 
@@ -99,7 +112,12 @@ public class TeleOp extends OpMode {
         telemetry.addData("Robot X", robotPose.x());
         telemetry.addData("Robot Y", robotPose.y());
         telemetry.addData("Robot Heading", Math.toDegrees(robotPose.heading()));
-        telemetry.addData("Robot Target Heading", positionDependentAiming.getHeadingError());
+        telemetry.addData("Robot Target Heading", Math.toDegrees(positionDependentAiming.getHeadingError()));
+        telemetry.addData("Turn Power", positionDependentAiming.getTurnPower());
+        telemetry.addData("Auto turn is active", positionDependentAiming.isActive());
+        telemetry.addData("Aim Error", Math.toDegrees(positionDependentAiming.getHeadingError()));
+        telemetry.addData("Turn Power", positionDependentAiming.getTurnPower());
+        telemetry.addData("Deadband", AIM_DEADBAND_DEGREES);
 
 
 
