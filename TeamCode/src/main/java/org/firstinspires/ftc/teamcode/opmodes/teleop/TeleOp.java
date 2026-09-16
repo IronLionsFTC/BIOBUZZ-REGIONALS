@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 import org.firstinspires.ftc.teamcode.subsystems.PositionDependentAiming;
 
 import static com.pedropathing.api.Paths.line;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.localisationPoint;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.AIM_DEADBAND_DEGREES;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
@@ -19,9 +20,7 @@ public class TeleOp extends OpMode {
 
     private Follower follower;
     private PositionDependentAiming positionDependentAiming;
-
-
-
+    
 
 
     @Override
@@ -59,9 +58,8 @@ public class TeleOp extends OpMode {
         // ==================
 
         if (gamepad1.triangleWasPressed()) {
-            Localise.setPoint(50,50,90);
+            Localise.setPoint(localisationPoint);
         }
-
 
         // ==================
         //    Aim at Goal
@@ -93,6 +91,7 @@ public class TeleOp extends OpMode {
             );
 
         follower.update();
+        Pose robotPose = follower.pose(); // returns a Pose object
 
 
 
@@ -100,7 +99,6 @@ public class TeleOp extends OpMode {
         //  Telemetry Values
         // ===================
 
-        Pose robotPose = follower.pose(); // returns a Pose object
         telemetry.addData("Robot X", robotPose.x());
         telemetry.addData("Robot Y", robotPose.y());
         telemetry.addData("Robot Heading", Math.toDegrees(robotPose.heading()));

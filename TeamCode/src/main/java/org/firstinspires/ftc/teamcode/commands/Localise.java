@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.pedropathing.follower.Follower;
@@ -12,14 +11,7 @@ public class Localise {
         Localise.follower = follower;
     }
 
-    public static void setPoint(double x, double y, double headingDegrees) {
-
-        Pose pose = new Pose(
-                x,
-                y,
-                Math.toRadians(headingDegrees)
-        );
-
+    public static void setPoint(Pose pose) {
         follower.setPose(pose);
     }
 }

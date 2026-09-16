@@ -1,4 +1,3 @@
-/*
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import com.pedropathing.api.PoseFactory;
@@ -21,6 +20,12 @@ import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.northFlower;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.northShootingPose;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redBallSpike;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southFlower;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southShootingPose;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.startPose;
 import static java.util.concurrent.locks.LockSupport.park;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
@@ -37,16 +42,6 @@ public class ExampleIvyAuto extends OpMode {
 
 
 
-    // ================= //
-    //       POSES
-    // ================= //
-    private final Pose startPose = poseFactory.of(8.282926829268291, 8.327642276422754, 90);
-    private final Pose southShootingPose = poseFactory.of(46.2, 23.8, 260);
-    private final Pose redBallSpike = poseFactory.of(9.1, 8.7, 180);
-    private final Pose southFlower = poseFactory.of(11, 45, 190);
-    private final Pose northShootingPose = poseFactory.of(48,118,100);
-    private final Pose northFlower = poseFactory.of(45.8, 131.2, 100);
-    private final Pose park = poseFactory.of(9.7, 119, 0);
 
 
     // ==================== //
@@ -157,4 +152,4 @@ public class ExampleIvyAuto extends OpMode {
         FollowerStorage.autonomousEndPose = follower.pose(); //saves your position in that file
     }
 }
-*/
+
