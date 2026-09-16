@@ -4,8 +4,8 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.commands.GoToPoint;
 import org.firstinspires.ftc.teamcode.commands.Localise;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
@@ -13,20 +13,21 @@ import org.firstinspires.ftc.teamcode.subsystems.PositionDependentAiming;
 
 import static com.pedropathing.api.Paths.line;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.localisationPoint;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southShootingPose;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.AIM_DEADBAND_DEGREES;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
-public class TeleOp extends OpMode {
+public class RedTeleOp extends OpMode {
 
     private Follower follower;
     private PositionDependentAiming positionDependentAiming;
-
 
 
     @Override
     public void init() {
         follower = Constants.create(hardwareMap);
         Localise.init(follower);
+        GoToPoint.init(follower);
         positionDependentAiming = new PositionDependentAiming(follower);
     }
 
@@ -41,33 +42,16 @@ public class TeleOp extends OpMode {
     @Override
     public void loop() {
 
-        // ==================
-        //   Go to Position
-        // ==================
-
         if (gamepad1.circleWasPressed()) {
-            Pose targetPose = new Pose(50, 50, 90);
-            follower.follow(
-                    line(follower.pose(), targetPose)
-                            .linear(follower.pose(), targetPose)
-            );
-        }
-
-        // ==================
-        //     Relocalise
-        // ==================
+            GoToPoint.goTo(southShootingPose);}
 
         if (gamepad1.triangleWasPressed()) {
-            Localise.setPoint(localisationPoint);
-        }
-
-        // ==================
-        //    Aim at Goal
-        // ==================
+            Localise.setPoint(localisationPoint);}
 
         if (gamepad1.squareWasPressed()) {
-            positionDependentAiming.toggle();
-        }
+            positionDependentAiming.toggle();}
+
+
 
         // ==================
         //   Actual Driving

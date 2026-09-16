@@ -47,8 +47,6 @@ public class ExampleIvyAuto extends OpMode {
   //  private DcMotorEx intakeMotor;
 
 
-
-
     @Override
     public void init() {
         Scheduler.reset();

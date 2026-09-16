@@ -20,7 +20,7 @@ public final class AutonomousPoses {
             poseFactory.of(8.282926829268291, 8.327642276422754, 90);
 
     public static final Pose southShootingPose =
-            poseFactory.of(46.2, 23.8, 260);
+            poseFactory.of(41.50487804878049, 23.185365853658535, 245);
 
     public static final Pose redBallSpike =
             poseFactory.of(9.1, 8.7, 180);

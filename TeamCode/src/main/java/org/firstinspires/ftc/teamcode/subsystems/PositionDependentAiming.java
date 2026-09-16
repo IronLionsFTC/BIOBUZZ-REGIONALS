@@ -6,11 +6,13 @@ import static org.firstinspires.ftc.teamcode.constants.DriveConstants.KD_POWER;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.MAX_TURN_POWER;
 
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.MIN_TURN_POWER;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.NORTH_TARGET_X;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.NORTH_TARGET_Y;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.SOUTH_TARGET_X;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.SOUTH_TARGET_Y;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.MIDDLE_POINT_Y;
+
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_MIDDLE_POINT_Y;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_NORTH_TARGET_X;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_NORTH_TARGET_Y;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_SOUTH_TARGET_X;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_SOUTH_TARGET_Y;
+
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
@@ -54,11 +56,11 @@ public class PositionDependentAiming {
     private double targetX;
     private double targetY;
 
-    private final double northTargetX = NORTH_TARGET_X;
-    private final double northTargetY = NORTH_TARGET_Y;
+    private final double northTargetX = RED_NORTH_TARGET_X;
+    private final double northTargetY = RED_NORTH_TARGET_Y;
 
-    private final double southTargetX = SOUTH_TARGET_X;
-    private final double southTargetY = SOUTH_TARGET_Y;
+    private final double southTargetX = RED_SOUTH_TARGET_X;
+    private final double southTargetY = RED_SOUTH_TARGET_Y;
 
 
     // =========================================
@@ -140,7 +142,7 @@ public class PositionDependentAiming {
          * Y <  0 -> South
          */
 
-        if (robotPose.y() >= MIDDLE_POINT_Y) {
+        if (robotPose.y() >= RED_MIDDLE_POINT_Y) {
 
             targetX = northTargetX;
             targetY = northTargetY;
@@ -176,7 +178,7 @@ public class PositionDependentAiming {
         double dy = targetY - robotPose.y();
 
         // Desired heading towards target
-        double targetHeading = Math.atan2(dy, dx);
+        double targetHeading = Math.atan2(dy, dx) + Math.PI;
 
         // Shortest angular error [-PI, PI]
         double headingError = normalizeAngle(
@@ -297,7 +299,7 @@ public class PositionDependentAiming {
         double dx = targetX - robotPose.x();
         double dy = targetY - robotPose.y();
 
-        double targetHeading = Math.atan2(dy, dx);
+        double targetHeading = Math.atan2(dy, dx) + Math.PI;
 
         return normalizeAngle(
                 targetHeading - robotPose.heading()

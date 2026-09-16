@@ -3,12 +3,12 @@ package org.firstinspires.ftc.teamcode.constants;
 import com.pedropathing.paths.Path;
 
 import static com.pedropathing.api.Paths.line;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.exampleIvyAutoStart;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.northFlower;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.northShootingPose;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redBallSpike;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southFlower;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southShootingPose;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.startPose;
 
 public final class AutonomousPaths {
 
@@ -22,8 +22,8 @@ public final class AutonomousPaths {
     // ==================== //
 
     public static Path shootPreload() {
-        return line(startPose, southShootingPose)
-                .linear(startPose, southShootingPose);
+        return line(exampleIvyAutoStart, southShootingPose)
+                .linear(exampleIvyAutoStart, southShootingPose);
     }
 
     public static Path intakeSpike() {
