@@ -20,15 +20,23 @@ import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
 
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.intakeNorthFlower;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.intakeSecondFlower;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.intakeSpike;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.shootNorthFlower;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.shootPreload;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.shootSecondFlower;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.shootSpikeBalls;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.exampleIvyAutoStart;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.northFlower;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.northShootingPose;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redBallSpike;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southFlower;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southShootingPose;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.startPose;
 import static java.util.concurrent.locks.LockSupport.park;
 
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.routines.ExampleIvyRoutine;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 
@@ -37,79 +45,7 @@ public class ExampleIvyAuto extends OpMode {
   //  private Intake intake;
     private Follower follower;
   //  private DcMotorEx intakeMotor;
-    private final PoseFactory poseFactory = PoseFactory.degrees();
 
-
-
-
-
-
-    // ==================== //
-    // PATHS LISTED BELOW
-    // ==================== //
-
-
-    private Path shootPreload() {
-        return line(startPose, southShootingPose).linear(startPose, southShootingPose);
-    }
-
-    private Path intakeSpike(){
-        return line(southShootingPose, redBallSpike).linear(southShootingPose, redBallSpike);
-    }
-
-    private Path shootSpikeBalls(){
-        return line(redBallSpike, northShootingPose).linear(redBallSpike, northShootingPose);
-    }
-
-    private Path intakeNorthFlower(){
-        return line(northShootingPose, northFlower).linear(southShootingPose, northFlower);
-    }
-
-    private Path shootNorthFlower(){
-        return line(northFlower, northShootingPose).linear(northFlower, northShootingPose);
-    }
-
-    private Path intakeSecondFlower(){
-        return line(northShootingPose, southFlower).linear(northShootingPose, southFlower);
-    }
-
-    private Path shootSecondFlower(){
-        return line(southFlower, southShootingPose).linear(southFlower, southShootingPose);
-    }
-
-
-
-
-    // ============== //
-    // IVY COMMANDS
-    // ============= //
-
-    private Command autoRoutine() {
-        return sequential(
-                follow(follower, shootPreload()),
-                // Add mechanism commands here, below is an intake example from Intake.java
-
-                deadline(
-                        follow(follower, intakeSpike())
-                       // intake.intake()
-                ), //deadline states that the second one finishes when the first finishes. (thus we dont get caught in a loop of infinite intake)
-                follow(follower, shootSpikeBalls()),
-
-                deadline(
-                        follow(follower, intakeNorthFlower())
-                       // intake.intake()
-                ),
-                follow(follower, shootNorthFlower()),
-
-                deadline(
-                        follow(follower, intakeSecondFlower())
-                       // intake.intake()
-                ),
-
-                follow(follower, shootSecondFlower())
-
-        );
-    }
 
 
 
@@ -118,7 +54,7 @@ public class ExampleIvyAuto extends OpMode {
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-        follower.setPose(startPose);
+        follower.setPose(exampleIvyAutoStart);
         follower.update();
         // intake = new Intake(hardwareMap); // Sets my intake as the intake from the hardwareMap
        // intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
@@ -126,7 +62,8 @@ public class ExampleIvyAuto extends OpMode {
 
     @Override
     public void start() {
-        schedule(autoRoutine());
+
+        schedule(ExampleIvyRoutine.mainAuto(follower));
     }
 
     @Override
@@ -135,17 +72,9 @@ public class ExampleIvyAuto extends OpMode {
         follower.update();
         Scheduler.execute();
         // add your other methods needed in the loop here
-
-        telemetry.addData("X", follower.pose().x());
-        telemetry.addData("Y", follower.pose().y());
-        telemetry.addData("Heading", Math.toDegrees(follower.pose().heading()));
-        telemetry.addData("Follower Mode", follower.mode());
         // telemetry.addData("Intaking:", intakeMotor.isMotorEnabled() );
         telemetry.update();
     }
-
-    // in your autonomous
-
 
     @Override
     public void stop() {

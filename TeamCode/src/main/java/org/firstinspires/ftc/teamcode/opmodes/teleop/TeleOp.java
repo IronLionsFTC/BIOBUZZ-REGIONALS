@@ -20,7 +20,7 @@ public class TeleOp extends OpMode {
 
     private Follower follower;
     private PositionDependentAiming positionDependentAiming;
-    
+
 
 
     @Override

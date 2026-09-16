@@ -16,7 +16,7 @@ public final class AutonomousPoses {
     //       POSES
     // ================= //
 
-    public static final Pose startPose =
+    public static final Pose exampleIvyAutoStart =
             poseFactory.of(8.282926829268291, 8.327642276422754, 90);
 
     public static final Pose southShootingPose =
