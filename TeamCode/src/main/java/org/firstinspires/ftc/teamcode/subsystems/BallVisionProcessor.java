@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import android.graphics.Canvas;
@@ -441,4 +442,5 @@ public class BallVisionProcessor implements VisionProcessor {
         return frameHeight;
     }
 }
+
 

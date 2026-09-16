@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import com.pedropathing.api.PoseFactory;
@@ -156,3 +157,4 @@ public class ExampleIvyAuto extends OpMode {
         FollowerStorage.autonomousEndPose = follower.pose(); //saves your position in that file
     }
 }
+*/

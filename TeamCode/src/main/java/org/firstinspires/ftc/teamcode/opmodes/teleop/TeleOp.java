@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.pedropathing.follower.Follower;
@@ -21,21 +22,12 @@ public class TeleOp extends OpMode {
 
 
 
+
+
     @Override
     public void init() {
         follower = Constants.create(hardwareMap);
         Localise.init(follower);
-        hardwareMap.get(DcMotor.class, "frontLeft")
-                .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        hardwareMap.get(DcMotor.class, "frontRight")
-                .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        hardwareMap.get(DcMotor.class, "backLeft")
-                .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        hardwareMap.get(DcMotor.class, "backRight")
-                .setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         positionDependentAiming = new PositionDependentAiming(follower);
     }
 
@@ -55,7 +47,7 @@ public class TeleOp extends OpMode {
         // ==================
 
         if (gamepad1.circleWasPressed()) {
-            Pose targetPose = new Pose(0, 0, 0);
+            Pose targetPose = new Pose(50, 50, 90);
             follower.follow(
                     line(follower.pose(), targetPose)
                             .linear(follower.pose(), targetPose)
@@ -67,7 +59,7 @@ public class TeleOp extends OpMode {
         // ==================
 
         if (gamepad1.triangleWasPressed()) {
-            Localise.setPoint(10,10,90);
+            Localise.setPoint(50,50,90);
         }
 
 
@@ -125,4 +117,5 @@ public class TeleOp extends OpMode {
 
         }
     }
+
 

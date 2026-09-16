@@ -10,6 +10,7 @@ import static org.firstinspires.ftc.teamcode.constants.DriveConstants.NORTH_TARG
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.NORTH_TARGET_Y;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.SOUTH_TARGET_X;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.SOUTH_TARGET_Y;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.MIDDLE_POINT_Y;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
@@ -139,7 +140,7 @@ public class PositionDependentAiming {
          * Y <  0 -> South
          */
 
-        if (robotPose.y() >= (NORTH_TARGET_Y+SOUTH_TARGET_Y)/2) {
+        if (robotPose.y() >= MIDDLE_POINT_Y) {
 
             targetX = northTargetX;
             targetY = northTargetY;
