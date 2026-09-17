@@ -2,13 +2,20 @@ package org.firstinspires.ftc.teamcode.constants;
 
 import com.pedropathing.paths.Path;
 
+import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.exampleIvyAutoStart;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.northFlower;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.northShootingPose;
+
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redBallSpike;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southFlower;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southShootingPose;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redCollectBallsInMiddle;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redCollectBallsOnWall;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redControlPointOfBallSpike;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redControlPointOfPark;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redFortyEightStartingPose;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redNorthFlower;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redNorthShootingPose;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redPark;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redSouthShootingPose;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redWaitForTilt;
 
 public final class AutonomousPaths {
 
@@ -21,38 +28,48 @@ public final class AutonomousPaths {
     //        PATHS
     // ==================== //
 
-    public static Path shootPreload() {
-        return line(exampleIvyAutoStart, southShootingPose)
-                .linear(exampleIvyAutoStart, southShootingPose);
+    public static Path redShootPreload() {
+        return line(redFortyEightStartingPose, redSouthShootingPose)
+                .linear(redFortyEightStartingPose, redSouthShootingPose);
     }
 
-    public static Path intakeSpike() {
-        return line(southShootingPose, redBallSpike)
-                .linear(southShootingPose, redBallSpike);
+    public static Path redIntakeRedSpike() {
+        return curve(redSouthShootingPose, redControlPointOfBallSpike, redBallSpike)
+                .linear(redSouthShootingPose, redBallSpike);
     }
 
-    public static Path shootSpikeBalls() {
-        return line(redBallSpike, northShootingPose)
-                .linear(redBallSpike, northShootingPose);
+    public static Path redShootSpikeBalls() {
+        return line(redBallSpike, redNorthShootingPose)
+                .linear(redBallSpike, redNorthShootingPose);
     }
 
-    public static Path intakeNorthFlower() {
-        return line(northShootingPose, northFlower)
-                .linear(northShootingPose, northFlower);
+    public static Path redIntakeNorthFlower() {
+        return line(redNorthShootingPose, redNorthFlower)
+                .linear(redNorthShootingPose, redNorthFlower);
     }
 
-    public static Path shootNorthFlower() {
-        return line(northFlower, northShootingPose)
-                .linear(northFlower, northShootingPose);
+    public static Path redShootNorthFlower() {
+        return line(redNorthFlower, redNorthShootingPose)
+                .linear(redNorthFlower, redNorthShootingPose);
     }
 
-    public static Path intakeSecondFlower() {
-        return line(northShootingPose, southFlower)
-                .linear(northShootingPose, southFlower);
+    public static Path redWaitForNorthTilt() {
+        return line(redNorthShootingPose, redWaitForTilt)
+                .linear(redNorthShootingPose, redWaitForTilt);
     }
 
-    public static Path shootSecondFlower() {
-        return line(southFlower, southShootingPose)
-                .linear(southFlower, southShootingPose);
+    public static Path redCollectInitialNorthDroppedBalls() {
+        return line(redWaitForTilt, redCollectBallsInMiddle)
+                .linear(redWaitForTilt, redCollectBallsInMiddle);
+    }
+
+    public static Path redCollectFinalNorthDroppedBalls() {
+        return line(redCollectBallsInMiddle, redCollectBallsOnWall)
+                .linear(redCollectBallsInMiddle, redCollectBallsOnWall);
+    }
+
+    public static Path redReturnToPark() {
+        return curve(redCollectBallsOnWall, redControlPointOfPark, redPark)
+                .linear(redCollectBallsOnWall, redPark);
     }
 }
