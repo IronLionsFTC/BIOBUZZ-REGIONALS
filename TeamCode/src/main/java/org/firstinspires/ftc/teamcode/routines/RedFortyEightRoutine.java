@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.routines;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
@@ -38,6 +39,8 @@ public final class RedFortyEightRoutine {
                         redShootPreload()
                 ),
 
+                waitMs(1500),
+
                 // Intake spike
                 deadline(
                         follow(
@@ -53,6 +56,8 @@ public final class RedFortyEightRoutine {
                         redShootSpikeBalls()
                 ),
 
+                waitMs(1500),
+
                 // Intake north flower
                 deadline(
                         follow(
@@ -61,6 +66,8 @@ public final class RedFortyEightRoutine {
                         )
                         // Intake command
                 ),
+
+                waitMs(3000),
 
                 // Shoot north flower
                 follow(
@@ -76,6 +83,8 @@ public final class RedFortyEightRoutine {
                         )
                         // Intake command
                 ),
+
+                waitMs(3000),
 
                 // Collect Dropped Pollen
                 deadline(
