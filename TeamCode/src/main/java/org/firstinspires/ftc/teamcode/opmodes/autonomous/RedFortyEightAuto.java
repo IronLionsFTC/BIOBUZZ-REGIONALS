@@ -5,7 +5,8 @@ import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import static com.pedropathing.ivy.Scheduler.schedule;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.exampleIvyAutoStart;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redFortyEightStartingPose;
+
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.routines.RedFortyEightRoutine;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
@@ -22,7 +23,7 @@ public class RedFortyEightAuto extends OpMode {
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-        follower.setPose(exampleIvyAutoStart);
+        follower.setPose(redFortyEightStartingPose);
         follower.update();
         // intake = new Intake(hardwareMap); // Sets my intake as the intake from the hardwareMap
        // intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");

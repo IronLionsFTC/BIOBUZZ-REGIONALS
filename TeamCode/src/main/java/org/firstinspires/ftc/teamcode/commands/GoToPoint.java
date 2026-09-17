@@ -4,6 +4,9 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
 import static com.pedropathing.api.Paths.line;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redNorthShootingPose;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redSouthShootingPose;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_MIDDLE_POINT_Y;
 
 public class GoToPoint {
 
@@ -18,5 +21,16 @@ public class GoToPoint {
                 line(follower.pose(), pose)
                         .linear(follower.pose(), pose)
         );
+    }
+
+    public static void goToRedShootingPosition() {
+
+        Pose robotPose = follower.pose();
+
+        if (robotPose.y() >= RED_MIDDLE_POINT_Y) {
+            goTo(redNorthShootingPose);
+        } else {
+            goTo(redSouthShootingPose);
+        }
     }
 }

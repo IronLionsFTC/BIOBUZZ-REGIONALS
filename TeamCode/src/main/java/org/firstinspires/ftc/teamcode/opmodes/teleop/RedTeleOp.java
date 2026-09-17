@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.pedropathing.follower.Follower;
@@ -10,30 +9,40 @@ import org.firstinspires.ftc.teamcode.commands.Localise;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 import org.firstinspires.ftc.teamcode.subsystems.PositionDependentAiming;
+import org.firstinspires.ftc.teamcode.subsystems.TeleOpDrive;
 
-import static com.pedropathing.api.Paths.line;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.localisationPoint;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.southShootingPose;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redLocalisationPoint;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.AIM_DEADBAND_DEGREES;
+
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class RedTeleOp extends OpMode {
 
     private Follower follower;
     private PositionDependentAiming positionDependentAiming;
+    private TeleOpDrive teleOpDrive;
 
 
     @Override
     public void init() {
+
         follower = Constants.create(hardwareMap);
+
         Localise.init(follower);
         GoToPoint.init(follower);
+
         positionDependentAiming = new PositionDependentAiming(follower);
+
+        teleOpDrive = new TeleOpDrive(
+                follower,
+                positionDependentAiming
+        );
     }
 
 
     @Override
-    public void start(){
+    public void start() {
+
         follower.setPose(FollowerStorage.autonomousEndPose);
         follower.update();
     }
@@ -43,40 +52,31 @@ public class RedTeleOp extends OpMode {
     public void loop() {
 
         if (gamepad1.circleWasPressed()) {
-            GoToPoint.goTo(southShootingPose);}
+            GoToPoint.goToRedShootingPosition();
+        }
 
-        if (gamepad1.triangleWasPressed()) {
-            Localise.setPoint(localisationPoint);}
+        if (gamepad1.dpad_left) {
+            Localise.setPoint(redLocalisationPoint);
+        }
 
         if (gamepad1.squareWasPressed()) {
-            positionDependentAiming.toggle();}
-
+            positionDependentAiming.toggle();
+        }
 
 
         // ==================
         //   Actual Driving
         // ==================
 
-        double forward = -gamepad1.left_stick_y;
-        double strafe = -gamepad1.left_stick_x;
-        double turn;
+        teleOpDrive.drive(
+                gamepad1.left_stick_y,
+                gamepad1.left_stick_x,
+                gamepad1.right_stick_x
+        );
 
-        if (positionDependentAiming.isActive()) {
-            turn = positionDependentAiming.getTurnPower();
-        } else {
-            turn = -gamepad1.right_stick_x;
-        }
+        teleOpDrive.update();
 
-        if(!follower.isBusy())
-            follower.manual(
-                    forward,
-                    strafe,
-                    turn
-            );
-
-        follower.update();
-        Pose robotPose = follower.pose(); // returns a Pose object
-
+        Pose robotPose = teleOpDrive.getPose();
 
 
         // ===================
@@ -90,14 +90,6 @@ public class RedTeleOp extends OpMode {
         telemetry.addData("Turn Power", positionDependentAiming.getTurnPower());
         telemetry.addData("Auto turn is active", positionDependentAiming.isActive());
         telemetry.addData("Aim Error", Math.toDegrees(positionDependentAiming.getHeadingError()));
-        telemetry.addData("Turn Power", positionDependentAiming.getTurnPower());
         telemetry.addData("Deadband", AIM_DEADBAND_DEGREES);
-
-
-
-
-
-        }
     }
-
-
+}
