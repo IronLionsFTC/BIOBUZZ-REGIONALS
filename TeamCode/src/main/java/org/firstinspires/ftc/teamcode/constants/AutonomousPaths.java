@@ -16,6 +16,7 @@ import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redNorthS
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redPark;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redSouthShootingPose;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redWaitForTilt;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.testAutoStart;
 
 public final class AutonomousPaths {
 
@@ -34,7 +35,7 @@ public final class AutonomousPaths {
     }
 
     public static Path redIntakeRedSpike() {
-        return curve(redSouthShootingPose, redControlPointOfBallSpike, redBallSpike)
+        return line(redSouthShootingPose, redBallSpike)
                 .linear(redSouthShootingPose, redBallSpike);
     }
 
@@ -71,5 +72,15 @@ public final class AutonomousPaths {
     public static Path redReturnToPark() {
         return curve(redCollectBallsOnWall, redControlPointOfPark, redPark)
                 .linear(redCollectBallsOnWall, redPark);
+    }
+
+    public static Path testAutoPath1() {
+        return line(testAutoStart, redSouthShootingPose)
+                .linear(testAutoStart, redSouthShootingPose);
+    }
+
+    public static Path testAutoPath2() {
+        return line(redSouthShootingPose, testAutoStart)
+                .linear(redSouthShootingPose, testAutoStart);
     }
 }

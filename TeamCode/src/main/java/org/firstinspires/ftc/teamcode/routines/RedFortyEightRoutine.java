@@ -42,13 +42,12 @@ public final class RedFortyEightRoutine {
                 waitMs(1500),
 
                 // Intake spike
-                deadline(
                         follow(
                                 follower,
                                 redIntakeRedSpike()
-                        )
+                        ),
                         // Add intake command here
-                ),
+
 
                 // Shoot spike balls
                 follow(
@@ -59,13 +58,13 @@ public final class RedFortyEightRoutine {
                 waitMs(1500),
 
                 // Intake north flower
-                deadline(
+
                         follow(
                                 follower,
                                 redIntakeNorthFlower()
-                        )
+                        ),
                         // Intake command
-                ),
+
 
                 waitMs(3000),
 
@@ -76,32 +75,31 @@ public final class RedFortyEightRoutine {
                 ),
 
                 // Wait for North to tip
-                deadline(
+
                         follow(
                                 follower,
                                 redWaitForNorthTilt()
-                        )
+                        ),
                         // Intake command
-                ),
+
 
                 waitMs(3000),
 
                 // Collect Dropped Pollen
-                deadline(
+
                     follow(
                                 follower,
                                 redCollectInitialNorthDroppedBalls()
-                        )
+                        ),
                         // Intake command
-                ),
 
-                deadline(
+
                         follow(
                                 follower,
                                 redCollectFinalNorthDroppedBalls()
-                        )
+                        ),
                         // Intake command
-                ),
+
 
                 follow(
                         follower,

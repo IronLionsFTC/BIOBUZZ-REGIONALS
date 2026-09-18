@@ -19,6 +19,9 @@ public final class AutonomousPoses {
 
     // Starting Points of Autos
     public static final Pose redFortyEightStartingPose =
+            poseFactory.of(47.3, 8.9, 270);
+
+    public static final Pose testAutoStart =
             poseFactory.of(8.3, 8.3, 90);
 
 
