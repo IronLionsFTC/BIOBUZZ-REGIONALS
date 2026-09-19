@@ -89,9 +89,10 @@ public class RedTeleOp extends OpMode {
         telemetry.addData("Robot Y", robotPose.y());
         telemetry.addData("Robot Heading", Math.toDegrees(robotPose.heading()));
         telemetry.addData("Robot Target Heading", Math.toDegrees(positionDependentAiming.getHeadingError()));
-        telemetry.addData("Turn Power", positionDependentAiming.getTurnPower());
         telemetry.addData("Auto turn is active", positionDependentAiming.isActive());
         telemetry.addData("Aim Error", Math.toDegrees(positionDependentAiming.getHeadingError()));
         telemetry.addData("Deadband", AIM_DEADBAND_DEGREES);
+        telemetry.addData("Robot Target Y", positionDependentAiming.getTargetX());
+        telemetry.addData("Robot Target Y", positionDependentAiming.getTargetY());
     }
 }
