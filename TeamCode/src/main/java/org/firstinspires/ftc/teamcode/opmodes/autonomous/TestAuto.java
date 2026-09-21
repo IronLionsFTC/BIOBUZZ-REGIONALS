@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.testAutoPath;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redFortyEightStartingPose;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.testAutoStart;
 
@@ -20,6 +24,16 @@ public class TestAuto extends OpMode {
     //  private DcMotorEx intakeMotor;
 
 
+    private static Command mainAuto(Follower follower) {
+
+        return sequential(
+                follow(
+                        follower,
+                        testAutoPath()
+                )
+        );
+    }
+
     @Override
     public void init() {
         Scheduler.reset();
@@ -27,13 +41,10 @@ public class TestAuto extends OpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(testAutoStart);
         follower.update();
-        // intake = new Intake(hardwareMap); // Sets my intake as the intake from the hardwareMap
-        // intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
     }
 
     @Override
     public void start() {
-
         schedule(TestAutoRoutine.mainAuto(follower));
     }
 

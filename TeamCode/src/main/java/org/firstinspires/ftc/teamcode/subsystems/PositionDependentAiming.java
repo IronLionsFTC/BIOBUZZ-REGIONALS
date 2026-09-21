@@ -56,11 +56,6 @@ public class PositionDependentAiming {
     private double targetX;
     private double targetY;
 
-    private final double northTargetX = RED_NORTH_TARGET_X;
-    private final double northTargetY = RED_NORTH_TARGET_Y;
-
-    private final double southTargetX = RED_SOUTH_TARGET_X;
-    private final double southTargetY = RED_SOUTH_TARGET_Y;
 
 
     // =========================================
@@ -82,8 +77,8 @@ public class PositionDependentAiming {
         this.follower = follower;
 
         // Default target.
-        targetX = northTargetX;
-        targetY = northTargetY;
+        targetX = RED_NORTH_TARGET_X;
+        targetY = RED_NORTH_TARGET_Y;
 
         resetController();
     }
@@ -135,22 +130,16 @@ public class PositionDependentAiming {
 
         Pose robotPose = follower.pose();
 
-        /*
-         * Field coordinate system:
-         *
-         * Y >= 0 -> North
-         * Y <  0 -> South
-         */
 
         if (robotPose.y() >= RED_MIDDLE_POINT_Y) {
 
-            targetX = northTargetX;
-            targetY = northTargetY;
+            targetX = RED_NORTH_TARGET_X;
+            targetY = RED_NORTH_TARGET_Y;
 
         } else {
 
-            targetX = southTargetX;
-            targetY = southTargetY;
+            targetX = RED_SOUTH_TARGET_X;
+            targetY = RED_SOUTH_TARGET_Y;
         }
     }
 

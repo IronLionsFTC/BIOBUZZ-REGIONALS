@@ -7,8 +7,8 @@ import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.testAutoPath1;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.testAutoPath2;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.redShootPreload;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPaths.testAutoPath;
 
 
 public final class TestAutoRoutine {
@@ -27,12 +27,7 @@ public final class TestAutoRoutine {
         return sequential(
                 follow(
                         follower,
-                        testAutoPath1()
-                ),
-
-                follow(
-                        follower,
-                        testAutoPath2()
+                        testAutoPath()
                 )
         );
     }
