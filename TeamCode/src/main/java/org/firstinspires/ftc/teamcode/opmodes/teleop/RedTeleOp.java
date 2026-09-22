@@ -28,7 +28,7 @@ public class RedTeleOp extends OpMode {
     private Follower follower;
     private Aiming aiming;
     private PollenHood pollenHood;
-    private PollenShooter pollenShooter;
+    //private PollenShooter pollenShooter;
     private ShooterLookupTables shooterLookupTables;
 
 
@@ -48,7 +48,7 @@ public class RedTeleOp extends OpMode {
 
         aimingTargetMath = new AimingTargetMath(follower);
 
-        pollenShooter = new PollenShooter(hardwareMap);
+        //pollenShooter = new PollenShooter(hardwareMap);
         pollenHood = new PollenHood(hardwareMap);
 
         shooterLookupTables = new ShooterLookupTables();
@@ -60,8 +60,8 @@ public class RedTeleOp extends OpMode {
     @Override
     public void start() {
 
-        follower.setPose(FollowerStorage.autonomousEndPose);
-        follower.update();
+       // follower.setPose(FollowerStorage.autonomousEndPose);
+       // follower.update();
     }
 
 
@@ -108,11 +108,11 @@ public class RedTeleOp extends OpMode {
 
         double shootingDistance = aimingTargetMath.getDistanceToTarget();
 
-        double pollenTargetRPM = shooterLookupTables.getPollenRPM(shootingDistance);
+        //double pollenTargetRPM = shooterLookupTables.getPollenRPM(shootingDistance);
 
         double pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
 
-        pollenShooter.setTargetRPM(pollenTargetRPM);
+        //pollenShooter.setTargetRPM(pollenTargetRPM);
         pollenHood.setAngle(pollenTargetHood);
 
 
@@ -128,7 +128,7 @@ public class RedTeleOp extends OpMode {
         telemetry.addData("Robot Target X", aimingTargetMath.getTargetX());
         telemetry.addData("Robot Target Y", aimingTargetMath.getTargetY());
         telemetry.addData("Robot Direct Distance from Target", aimingTargetMath.getDistanceToTarget());
-        telemetry.addData("Pollen Target RPM", pollenTargetRPM);
+        //telemetry.addData("Pollen Target RPM", pollenTargetRPM);
         telemetry.addData("Pollen Target Hood", pollenTargetHood);
         telemetry.update();
 

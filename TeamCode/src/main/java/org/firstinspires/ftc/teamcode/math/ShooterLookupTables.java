@@ -25,10 +25,11 @@ public class ShooterLookupTables {
         pollenRPM.createLUT();
 
 
-        pollenHood.add(20, 0.30);
-        pollenHood.add(30, 0.35);
-        pollenHood.add(40, 0.40);
-        pollenHood.add(50, 0.45);
+        pollenHood.add(0, 0);
+        pollenHood.add(20, 7.5);
+        pollenHood.add(40, 15);
+        pollenHood.add(60, 22.5);
+        pollenHood.add(80, 30);
         pollenHood.createLUT();
 
 
