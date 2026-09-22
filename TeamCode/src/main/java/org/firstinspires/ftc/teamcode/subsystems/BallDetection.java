@@ -20,7 +20,7 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BallVisionProcessor implements VisionProcessor {
+public class BallDetection implements VisionProcessor {
 
     // ============================================================
     // SETTINGS

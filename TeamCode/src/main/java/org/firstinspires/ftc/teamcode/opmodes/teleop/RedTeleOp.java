@@ -1,26 +1,20 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.commands.GoToPoint;
 import org.firstinspires.ftc.teamcode.commands.Localise;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
-import org.firstinspires.ftc.teamcode.subsystems.PositionDependentAiming;
-import org.firstinspires.ftc.teamcode.subsystems.TeleOpDrive;
+import org.firstinspires.ftc.teamcode.subsystems.Aiming;
 
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redLocalisationPoint;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.AIM_DEADBAND_DEGREES;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_NORTH_TARGET_X;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_SOUTH_TARGET_X;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_SOUTH_TARGET_Y;
+
 
 
 
@@ -29,8 +23,8 @@ public class RedTeleOp extends OpMode {
 
 
     private Follower follower;
-    private PositionDependentAiming positionDependentAiming;
-    private TeleOpDrive teleOpDrive;
+    private Aiming aiming;
+    private AimingTargetMath aimingTargetCalculator;
 
 
 
@@ -42,12 +36,7 @@ public class RedTeleOp extends OpMode {
         Localise.init(follower);
         GoToPoint.init(follower);
 
-        positionDependentAiming = new PositionDependentAiming(follower);
-
-        teleOpDrive = new TeleOpDrive(
-                follower,
-                positionDependentAiming
-        );
+        aiming = new Aiming(follower);
     }
 
 
@@ -71,7 +60,7 @@ public class RedTeleOp extends OpMode {
         }
 
         if (gamepad1.squareWasPressed()) {
-            positionDependentAiming.toggle();
+            aiming.toggle();
         }
 
 
@@ -79,16 +68,28 @@ public class RedTeleOp extends OpMode {
         //   Actual Driving
         // ==================
 
-        teleOpDrive.drive(
-                gamepad1.left_stick_y,
-                gamepad1.left_stick_x,
-                gamepad1.right_stick_x
-        );
+        double forward = -gamepad1.left_stick_y;
+        double strafe = -gamepad1.left_stick_x;
+        double turn;
 
-        teleOpDrive.update();
+        if (aiming.isActive()) {
+            turn = aiming.getTurnPower();
+        } else {
+            turn = -gamepad1.right_stick_x;
+        }
+
+        if (!follower.isBusy()) {
+            follower.manual(
+                    forward,
+                    strafe,
+                    turn
+            );
+        }
+
+        follower.update();
 
 
-        Pose robotPose = teleOpDrive.getPose();
+        Pose robotPose = follower.pose();
 
 
         // ===================
@@ -98,12 +99,10 @@ public class RedTeleOp extends OpMode {
         telemetry.addData("Robot X", robotPose.x());
         telemetry.addData("Robot Y", robotPose.y());
         telemetry.addData("Robot Heading", Math.toDegrees(robotPose.heading()));
-        telemetry.addData("Robot Target Heading", Math.toDegrees(positionDependentAiming.getHeadingError()));
-        telemetry.addData("Auto turn is active", positionDependentAiming.isActive());
-        telemetry.addData("Aim Error", Math.toDegrees(positionDependentAiming.getHeadingError()));
-        telemetry.addData("Deadband", AIM_DEADBAND_DEGREES);
-        telemetry.addData("Robot Target X", positionDependentAiming.getTargetX());
-        telemetry.addData("Robot Target Y", positionDependentAiming.getTargetY());
+        telemetry.addData("Aim Error", Math.toDegrees(aiming.getHeadingError()));
+        telemetry.addData("Robot Target X", aimingTargetCalculator.getTargetX());
+        telemetry.addData("Robot Target Y", aimingTargetCalculator.getTargetY());
+        telemetry.addData("Robot Direct Distance from Target", aimingTargetCalculator.getDistanceToTarget());
         telemetry.update();
 
     }

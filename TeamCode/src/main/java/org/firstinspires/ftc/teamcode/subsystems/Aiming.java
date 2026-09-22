@@ -7,15 +7,11 @@ import static org.firstinspires.ftc.teamcode.constants.DriveConstants.MAX_TURN_P
 
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.MIN_TURN_POWER;
 
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_MIDDLE_POINT_Y;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_NORTH_TARGET_X;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_NORTH_TARGET_Y;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_SOUTH_TARGET_X;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_SOUTH_TARGET_Y;
-
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
+
+import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 
 
 /*
@@ -45,48 +41,37 @@ import com.pedropathing.math.Pose;
  * =========================================
  */
 
-public class PositionDependentAiming {
+public class Aiming {
 
     private final Follower follower;
-
-    // =========================================
-    // Targets
-    // =========================================
-
-    private double targetX;
-    private double targetY;
-
+    private final AimingTargetMath aimingTargetCalculator;
 
 
     // =========================================
-    // Controller state
+    // Define some items
     // =========================================
 
     private double lastHeading = 0.0;
     private long lastTime = 0;
-
     private boolean active = false;
 
 
     // =========================================
-    // Constructor
+    // Constructor // Init
     // =========================================
 
-    public PositionDependentAiming(Follower follower) {
+    public Aiming(Follower follower) {
 
         this.follower = follower;
-
-        // Default target.
-        targetX = RED_NORTH_TARGET_X;
-        targetY = RED_NORTH_TARGET_Y;
+        this.aimingTargetCalculator = new AimingTargetMath(follower);
 
         resetController();
     }
 
 
-    // =========================================
-    // Enable / Disable / Toggle
-    // =========================================
+    // ================================================
+    // Toggle function to call in opmode
+    // ================================================
 
     public void enable() {
 
@@ -123,28 +108,6 @@ public class PositionDependentAiming {
 
 
     // =========================================
-    // Select North or South target
-    // =========================================
-
-    private void updateTarget() {
-
-        Pose robotPose = follower.pose();
-
-
-        if (robotPose.y() >= RED_MIDDLE_POINT_Y) {
-
-            targetX = RED_NORTH_TARGET_X;
-            targetY = RED_NORTH_TARGET_Y;
-
-        } else {
-
-            targetX = RED_SOUTH_TARGET_X;
-            targetY = RED_SOUTH_TARGET_Y;
-        }
-    }
-
-
-    // =========================================
     // Main aiming calculation
     // =========================================
 
@@ -155,28 +118,28 @@ public class PositionDependentAiming {
         }
 
         // Update which target we are aiming at
-        updateTarget();
+        aimingTargetCalculator.updateTarget();
 
         Pose robotPose = follower.pose();
 
-        // =========================================
-        // Calculate vector from robot -> target
-        // =========================================
+        // ==============================================================
+        // Find the target heading 180 then normalise it and find error
+        // ==================================================================
 
-        double dx = targetX - robotPose.x();
-        double dy = targetY - robotPose.y();
 
         // Desired heading towards target
-        double targetHeading = Math.atan2(dy, dx) + Math.PI;
+        double targetHeading =
+                aimingTargetCalculator.getAngleToTarget()
+                        + Math.PI;
 
         // Shortest angular error [-PI, PI]
         double headingError = normalizeAngle(
                 targetHeading - robotPose.heading()
         );
 
-        // =========================================
-        // Deadband
-        // =========================================
+        // ===================================================
+        // Deadband to prevent jittering (currently 1 degree)
+        // ===================================================
 
         double deadband = Math.toRadians(AIM_DEADBAND_DEGREES);
 
@@ -188,7 +151,7 @@ public class PositionDependentAiming {
         }
 
         // =========================================
-        // Calculate timestep
+        // Calculate change in time
         // =========================================
 
         long currentTime = System.nanoTime();
@@ -212,7 +175,7 @@ public class PositionDependentAiming {
         );
 
         // =========================================
-        // Calculate actual angular velocity
+        // Calculate change in heading
         // =========================================
 
         double headingChange = normalizeAngle(
@@ -224,106 +187,61 @@ public class PositionDependentAiming {
 
         lastHeading = robotPose.heading();
 
-        // =========================================
-        // PD controller
-        // =========================================
+        // ======================================================
+        // Uses above to get the KD working, and obv KP is simple
+        // ======================================================
 
         double turnPower =
                 (headingError * KP_POWER)
                         - (angularVelocity * KD_POWER);
 
-        // =========================================
-        // Minimum power to overcome friction
-        // =========================================
-        //
-        // If the controller wants to turn but the calculated
-        // power is too small to physically move the robot,
-        // force it up to the minimum useful power.
-        //
-        // IMPORTANT:
-        // We only do this when turnPower != 0.
-        // The sign is preserved.
-        // =========================================
+
+
+
+        // ====================================================
+        // Just a way to get a max and min to stop silly values
+        // ====================================================
 
         double minimumPower = MIN_TURN_POWER;
 
         if (turnPower > 0) {
 
-            turnPower = Math.max(
-                    turnPower,
-                    minimumPower
-            );
+            turnPower = Math.max(turnPower, minimumPower);
 
         } else if (turnPower < 0) {
 
-            turnPower = Math.min(
-                    turnPower,
-                    -minimumPower
-            );
+            turnPower = Math.min(turnPower, -minimumPower);
         }
 
-        // =========================================
-        // Maximum power limit
-        // =========================================
 
-        turnPower = Math.max(
-                -MAX_TURN_POWER,
-                Math.min(MAX_TURN_POWER, turnPower)
-        );
+        turnPower = Math.max(-MAX_TURN_POWER, Math.min(MAX_TURN_POWER, turnPower));
 
         return turnPower;
     }
 
 
-    // =========================================
-    // Return current heading error
-    // =========================================
+    // =================================================================
+    // Function to get the heading for telemetry normally or other math
+    // =================================================================
 
     public double getHeadingError() {
 
-        updateTarget();
+        aimingTargetCalculator.updateTarget();
 
         Pose robotPose = follower.pose();
 
-        double dx = targetX - robotPose.x();
-        double dy = targetY - robotPose.y();
-
-        double targetHeading = Math.atan2(dy, dx) + Math.PI;
+        double targetHeading =
+                aimingTargetCalculator.getAngleToTarget()
+                        + Math.PI;
 
         return normalizeAngle(
                 targetHeading - robotPose.heading()
         );
     }
 
-
-    // =========================================
-    // Manually change target
-    // =========================================
-
-    public void setTarget(double x, double y) {
-
-        targetX = x;
-        targetY = y;
-    }
-
-
-    public double getTargetX() {
-
-        return targetX;
-    }
-
-
-    public double getTargetY() {
-
-        return targetY;
-    }
-
-
-
-
-    // =========================================
-    // Reset controller memory
-    // =========================================
+    // =================================================================
+    // Reset controller memory <---- called alot, stops weird glitches
+    // =================================================================
 
     private void resetController() {
 
@@ -335,9 +253,9 @@ public class PositionDependentAiming {
     }
 
 
-    // =========================================
-    // Normalize angle to [-PI, PI]
-    // =========================================
+    // =========================================================
+    // Normalize angle to [-PI, PI] so it takes shortest path.
+    // =========================================================
 
     private double normalizeAngle(double angle) {
 

@@ -16,8 +16,7 @@ import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redNorthS
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redPark;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redSouthShootingPose;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redWaitForTilt;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.testAutoStart;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.testPoint;
+
 
 public final class AutonomousPaths {
 
@@ -75,9 +74,5 @@ public final class AutonomousPaths {
                 .linear(redCollectBallsOnWall, redPark);
     }
 
-    public static Path testAutoPath() {
-        return line(testAutoStart, testPoint)
-                .linear(testAutoStart, testPoint);
-    }
 
 }

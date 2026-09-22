@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.subsystems.BallVisionProcessor;
+import org.firstinspires.ftc.teamcode.subsystems.BallDetection;
 import org.firstinspires.ftc.vision.VisionPortal;
 
 import android.util.Size;
@@ -21,7 +21,7 @@ public class BallVisionTest extends LinearOpMode {
 
 
     private VisionPortal visionPortal;
-    private BallVisionProcessor ballProcessor;
+    private BallDetection ballProcessor;
 
     @Override
     public void runOpMode() {
@@ -30,7 +30,7 @@ public class BallVisionTest extends LinearOpMode {
         // Create our custom vision processor
         // --------------------------------------------------------
 
-        ballProcessor = new BallVisionProcessor();
+        ballProcessor = new BallDetection();
 
         // --------------------------------------------------------
         // Create VisionPortal

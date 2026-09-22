@@ -21,8 +21,6 @@ public final class AutonomousPoses {
     public static final Pose redFortyEightStartingPose =
             poseFactory.of(47.3, 8.9, 270);
 
-        public static final Pose testAutoStart =
-                poseFactory.of(0, 0, 90);
 
     // Shooting Spots
     public static final Pose redSouthShootingPose =
@@ -71,8 +69,7 @@ public final class AutonomousPoses {
 
     // Test Points
 
-    public static final Pose testPoint =
-            poseFactory.of(30, 0, 180);
+
 
 
 }
