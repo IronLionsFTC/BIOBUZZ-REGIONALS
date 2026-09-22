@@ -44,6 +44,8 @@ public class Constants {
 
     public static ForesightConfig foresightConfig = new ForesightConfig(
             c -> {
+                c.maxVelocityConstraint.set(80.0);
+
                 Controller primaryTranslationalForward = Controller.proportional(0.17588293926386975);
                 Controller secondaryTranslationalForward = Controller.proportional(0.06498404637930752);
                 Controller primaryTranslationalLateral = Controller.proportional(0.2880843467764165);

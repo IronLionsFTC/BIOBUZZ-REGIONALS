@@ -1,3 +1,6 @@
+// PRESUMED REDUNDANT FOR NOW ///////////////////////////////////////////////////////////////////
+// !!!!!!!!!!!!!!!!!!!!!!!!!! ///////////////////////////////////////////////////////////////////
+// !!!!!!!!!!!!!!!!!!!!!!!!!! ///////////////////////////////////////////////////////////////////
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import com.pedropathing.follower.Follower;
@@ -13,9 +16,7 @@ import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 
 @Autonomous
 public class RedFortyEightAuto extends OpMode {
-  //  private Intake intake;
     private Follower follower;
-  //  private DcMotorEx intakeMotor;
 
 
     @Override
@@ -25,8 +26,7 @@ public class RedFortyEightAuto extends OpMode {
         follower = Constants.create(hardwareMap);
         follower.setPose(redFortyEightStartingPose);
         follower.update();
-        // intake = new Intake(hardwareMap); // Sets my intake as the intake from the hardwareMap
-       // intakeMotor = hardwareMap.get(DcMotorEx.class, "intake");
+
     }
 
     @Override
@@ -40,14 +40,13 @@ public class RedFortyEightAuto extends OpMode {
 
         follower.update();
         Scheduler.execute();
-        // add your other methods needed in the loop here
-        // telemetry.addData("Intaking:", intakeMotor.isMotorEnabled() );
+
         telemetry.update();
     }
 
     @Override
     public void stop() {
-        FollowerStorage.autonomousEndPose = follower.pose(); //saves your position in that file
+        FollowerStorage.autonomousEndPose = follower.pose();
     }
 }
 
