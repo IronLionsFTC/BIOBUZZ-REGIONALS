@@ -7,6 +7,17 @@ public class ShooterConstants {
     // ===================
 
     public static double POLLEN_KP = 0.002;
-    public static double  POLLEN_KD = 0.0;
+    public static double POLLEN_KD = 0.0;
     public static double POLLEN_KI = 0.0;
+
+    // ===================
+    // Pollen Hood Items
+    // ===================
+    public static double POLLEN_HOOD_RATIO = 9.0;
+    public static final double MIN_HOOD_ANGLE = 0.0;
+    public static final double MAX_HOOD_ANGLE = 30.0;
+
+    public static final double MIN_SERVO_POSITION = 0.0;
+    public static final double MAX_SERVO_POSITION = 0.75;
+
 }

@@ -73,14 +73,9 @@ public class PollenShooter {
 
     public double getCurrentRPM() {
 
-        double motorRPM =
-                motor.getVelocity()
-                        * 60.0
-                        / motor.getCPR();
+        double motorRPM = motor.getVelocity() * 60.0 / motor.getCPR();
 
-        return Math.abs(
-                motorRPM
-        );
+        return Math.abs(motorRPM);
     }
 
 
