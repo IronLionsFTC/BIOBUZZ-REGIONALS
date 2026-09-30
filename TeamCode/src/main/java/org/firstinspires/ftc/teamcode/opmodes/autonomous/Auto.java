@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
@@ -12,6 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -32,31 +35,50 @@ public class Auto extends OpMode {
 
 
     // POSES ///////////////////////////////////////////////////////////////////////////////////
-    private static final Pose redAutoStart = poseFactory.of(62, 8.3, 90);
-    private static final Pose southShootingPosition = poseFactory.of(47, 23.5, 245);
-    private static final Pose redBallSpike = poseFactory.of(10.25, 9.8, 180);
-    private static final Pose controlPoint = poseFactory.of(43.6, 11.8, 0);
-    private static final Pose northShootingPosition = poseFactory.of(47, 117, 115);
+    private static final Pose redAutoStart = poseFactory.of(62, 8.3, 270);
+    private static final Pose redSouthShootingPosition = poseFactory.of(47, 23.5, 245);
+    private static final Pose redBallSpike = poseFactory.of(10.25, 10.25, 180);
+    private static final Pose redControlPoint = poseFactory.of(43.6, 12, 0);
+    private static final Pose redNorthShootingPosition = poseFactory.of(47, 117, 115);
+    private static final Pose redControlPoint2 = poseFactory.of(12.5, 107,0);
+    private static final Pose redNorthFlower = poseFactory.of(45.5, 129, 115);
+    private static final Pose redPark = poseFactory.of(20.1, 117.2, 90);
 
 
     // PATHS ////////////////////////////////////////////////////////////////////////////////////
     private static Path shootPreloads() {
-        return line(redAutoStart, southShootingPosition)
-                .linear(redAutoStart, southShootingPosition);}
+        return line(redAutoStart, redSouthShootingPosition)
+                .linear(redAutoStart, redSouthShootingPosition);}
     private static Path goToBallSpike(){
-        return curve(southShootingPosition, controlPoint, redBallSpike)
-                .linear(southShootingPosition, redBallSpike);}
+        return curve(redSouthShootingPosition, redControlPoint, redBallSpike)
+                .linear(redSouthShootingPosition, redBallSpike);}
     private static Path goToNorthShooting(){
-        return line(redBallSpike, northShootingPosition)
-                .linear(redBallSpike, northShootingPosition);}
+        return curve(redBallSpike, redControlPoint2, redNorthShootingPosition)
+                .linear(redBallSpike, redNorthShootingPosition);}
+    private static Path intakeNorthFlower(){
+        return line(redNorthShootingPosition, redNorthFlower)
+                .linear(redNorthShootingPosition, redNorthFlower);}
+    private static Path shootFlowerBalls(){
+        return line(redNorthFlower, redNorthShootingPosition)
+                .linear(redNorthFlower, redNorthShootingPosition);}
+    private static Path goToPark(){
+        return line(redNorthShootingPosition, redPark)
+                .linear(redNorthShootingPosition, redPark);}
 
 
     // IVY COMMAND ///////////////////////////////////////////////////////////////////////////////
     private static Command mainAuto(Follower follower) {
         return sequential(
                 follow(follower, shootPreloads()),
+                waitMs(1000),
                 follow(follower,goToBallSpike()),
-                follow(follower, goToNorthShooting())
+                follow(follower, goToNorthShooting()),
+                waitMs(1000),
+                follow(follower, intakeNorthFlower()),
+                waitMs(500),
+                follow(follower, shootFlowerBalls()),
+                waitMs(1000),
+                follow(follower, goToPark())
         );
     }
 
@@ -69,6 +91,8 @@ public class Auto extends OpMode {
         aimingTargetMath = new AimingTargetMath(follower);
         pollenHood = new PollenHood(hardwareMap);
         shooterLookupTables = new ShooterLookupTables();
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
 
         follower.setPose(redAutoStart);
         follower.update();
