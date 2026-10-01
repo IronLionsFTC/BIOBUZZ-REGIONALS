@@ -8,12 +8,15 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.GoToPoint;
+import org.firstinspires.ftc.teamcode.commands.Intake;
 import org.firstinspires.ftc.teamcode.commands.Localise;
+import org.firstinspires.ftc.teamcode.commands.Shoot;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 import org.firstinspires.ftc.teamcode.subsystems.Aiming;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
+import org.firstinspires.ftc.teamcode.subsystems.NectarHood;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
@@ -29,7 +32,10 @@ public class RedTeleOp extends OpMode {
     private Follower follower;
     private Aiming aiming;
     private PollenHood pollenHood;
+    private NectarHood nectarHood;
     private Shooter shooter;
+    private Shoot shoot;
+    private Intake intake;
     private ShooterLookupTables shooterLookupTables;
 
 
@@ -51,6 +57,10 @@ public class RedTeleOp extends OpMode {
 
         shooter = new Shooter(hardwareMap);
         pollenHood = new PollenHood(hardwareMap);
+        nectarHood = new NectarHood(hardwareMap);
+
+        shoot = new Shoot(hardwareMap);
+        intake = new Intake(hardwareMap);
 
         shooterLookupTables = new ShooterLookupTables();
 
@@ -78,6 +88,14 @@ public class RedTeleOp extends OpMode {
 
         if (gamepad1.squareWasPressed()) {
             aiming.toggle();
+        }
+
+        if (gamepad1.right_trigger_pressed) {
+            shoot.shoot();
+        }
+
+        if (gamepad1.left_trigger_pressed) {
+            intake.intake();
         }
 
 
@@ -110,10 +128,13 @@ public class RedTeleOp extends OpMode {
 
         double targetRPM = shooterLookupTables.getPollenRPM(shootingDistance);
 
+        double nectarTargetHood = shooterLookupTables.getNectarHood(shootingDistance);
         double pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
 
         shooter.setTargetRPM(targetRPM);
+
         pollenHood.setAngle(pollenTargetHood);
+        nectarHood.setAngle(nectarTargetHood);
 
 
 
