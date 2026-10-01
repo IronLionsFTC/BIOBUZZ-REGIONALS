@@ -28,8 +28,8 @@ public class ShooterPractice extends OpMode {
     @Override
     public void init() {
 
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooterMotor");
-        shooterMotor2 = hardwareMap.get(DcMotorEx.class, "shooterMotor2");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "shooter1");
+        shooterMotor2 = hardwareMap.get(DcMotorEx.class, "shooter2");
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());}
 
@@ -48,9 +48,9 @@ public class ShooterPractice extends OpMode {
         if (shooterRPM < lowestRPM) {
             lowestRPM = shooterRPM;}
 
-        if (gamepad2.x && !lastX) {highestRPM = shooterRPM;lowestRPM = shooterRPM;}
+        if (gamepad1.x && !lastX) {highestRPM = shooterRPM;lowestRPM = shooterRPM;}
 
-        lastX = gamepad2.x;
+        lastX = gamepad1.x;
 
         telemetry.addData("Shooter Power", "%.2f", shooterPower);
         telemetry.addData("Shooter RPM", "%.0f", shooterRPM);

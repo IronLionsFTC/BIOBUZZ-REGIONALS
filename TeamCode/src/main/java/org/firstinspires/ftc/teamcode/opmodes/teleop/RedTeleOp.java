@@ -126,12 +126,12 @@ public class RedTeleOp extends OpMode {
 
         double shootingDistance = aimingTargetMath.getDistanceToTarget();
 
-        double targetRPM = shooterLookupTables.getPollenRPM(shootingDistance);
+        double targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
 
         double nectarTargetHood = shooterLookupTables.getNectarHood(shootingDistance);
         double pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
 
-        shooter.setTargetRPM(targetRPM);
+        shooter.setTargetPower(targetRPM);
 
         pollenHood.setAngle(pollenTargetHood);
         nectarHood.setAngle(nectarTargetHood);
@@ -149,8 +149,9 @@ public class RedTeleOp extends OpMode {
         telemetry.addData("Robot Target X", aimingTargetMath.getTargetX());
         telemetry.addData("Robot Target Y", aimingTargetMath.getTargetY());
         telemetry.addData("Robot Direct Distance from Target", aimingTargetMath.getDistanceToTarget());
-        telemetry.addData("Pollen Target RPM", targetRPM);
+        telemetry.addData("Target RPM of Shooters", targetRPM);
         telemetry.addData("Pollen Target Hood", pollenTargetHood);
+        telemetry.addData("Nectar Target Hood", nectarTargetHood);
         telemetry.update();
 
     }
