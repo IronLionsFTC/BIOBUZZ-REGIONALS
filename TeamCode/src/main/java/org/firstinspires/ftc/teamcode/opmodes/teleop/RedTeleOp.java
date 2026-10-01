@@ -5,30 +5,30 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.GoToPoint;
 import org.firstinspires.ftc.teamcode.commands.Localise;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
-import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 import org.firstinspires.ftc.teamcode.subsystems.Aiming;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
-import org.firstinspires.ftc.teamcode.subsystems.PollenShooter;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redLocalisationPoint;
 
 
 
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp
+@TeleOp
 public class RedTeleOp extends OpMode {
 
 
     private Follower follower;
     private Aiming aiming;
     private PollenHood pollenHood;
-    //private PollenShooter pollenShooter;
+    private Shooter shooter;
     private ShooterLookupTables shooterLookupTables;
 
 
@@ -48,7 +48,7 @@ public class RedTeleOp extends OpMode {
 
         aimingTargetMath = new AimingTargetMath(follower);
 
-        //pollenShooter = new PollenShooter(hardwareMap);
+        shooter = new Shooter(hardwareMap);
         pollenHood = new PollenHood(hardwareMap);
 
         shooterLookupTables = new ShooterLookupTables();
@@ -60,8 +60,8 @@ public class RedTeleOp extends OpMode {
     @Override
     public void start() {
 
-       // follower.setPose(FollowerStorage.autonomousEndPose);
-       // follower.update();
+        // follower.setPose(FollowerStorage.autonomousEndPose);
+        // follower.update();
     }
 
 
@@ -108,11 +108,11 @@ public class RedTeleOp extends OpMode {
 
         double shootingDistance = aimingTargetMath.getDistanceToTarget();
 
-        //double pollenTargetRPM = shooterLookupTables.getPollenRPM(shootingDistance);
+        double targetRPM = shooterLookupTables.getPollenRPM(shootingDistance);
 
         double pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
 
-        //pollenShooter.setTargetRPM(pollenTargetRPM);
+        shooter.setTargetRPM(targetRPM);
         pollenHood.setAngle(pollenTargetHood);
 
 
@@ -128,9 +128,10 @@ public class RedTeleOp extends OpMode {
         telemetry.addData("Robot Target X", aimingTargetMath.getTargetX());
         telemetry.addData("Robot Target Y", aimingTargetMath.getTargetY());
         telemetry.addData("Robot Direct Distance from Target", aimingTargetMath.getDistanceToTarget());
-        //telemetry.addData("Pollen Target RPM", pollenTargetRPM);
+        telemetry.addData("Pollen Target RPM", targetRPM);
         telemetry.addData("Pollen Target Hood", pollenTargetHood);
         telemetry.update();
 
     }
 }
+

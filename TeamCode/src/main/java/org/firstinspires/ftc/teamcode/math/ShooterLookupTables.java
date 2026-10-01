@@ -5,10 +5,9 @@ import com.seattlesolvers.solverslib.util.InterpLUT;
 
 public class ShooterLookupTables {
 
-    private final InterpLUT pollenRPM = new InterpLUT();
+    private final InterpLUT shooterRPM = new InterpLUT();
     private final InterpLUT pollenHood = new InterpLUT();
 
-    private final InterpLUT nectarRPM = new InterpLUT();
     private final InterpLUT nectarHood = new InterpLUT();
 
 
@@ -18,11 +17,11 @@ public class ShooterLookupTables {
         // Pollen Look-Up Tables (TO BE REPLACED WITH REAL VALUES)
         // ========================================================
 
-        pollenRPM.add(20, 3000);
-        pollenRPM.add(30, 3200);
-        pollenRPM.add(40, 3450);
-        pollenRPM.add(50, 3700);
-        pollenRPM.createLUT();
+        shooterRPM.add(20, 3000);
+        shooterRPM.add(30, 3200);
+        shooterRPM.add(40, 3450);
+        shooterRPM.add(50, 3700);
+        shooterRPM.createLUT();
 
 
         pollenHood.add(0, 0);
@@ -37,13 +36,6 @@ public class ShooterLookupTables {
         // Nectar Look-Up Tables (TO BE REPLACED WITH REAL VALUES)
         // ========================================================
 
-        nectarRPM.add(20, 2800);
-        nectarRPM.add(30, 3000);
-        nectarRPM.add(40, 3250);
-        nectarRPM.add(50, 3500);
-        nectarRPM.createLUT();
-
-
         nectarHood.add(20, 0.28);
         nectarHood.add(30, 0.33);
         nectarHood.add(40, 0.38);
@@ -57,17 +49,9 @@ public class ShooterLookupTables {
     // ================================
 
     public double getPollenRPM(double distance) {
-        return pollenRPM.get(distance);
+        return shooterRPM.get(distance);
     }
-
-    public double getPollenHood(double distance) {
-        return pollenHood.get(distance);
-    }
-
-    public double getNectarRPM(double distance) {
-        return nectarRPM.get(distance);
-    }
-
+    public double getPollenHood(double distance) {return pollenHood.get(distance);}
     public double getNectarHood(double distance) {
         return nectarHood.get(distance);
     }
