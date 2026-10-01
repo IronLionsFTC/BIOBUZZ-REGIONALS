@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 import org.firstinspires.ftc.teamcode.subsystems.Aiming;
+import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 
@@ -59,9 +60,8 @@ public class RedTeleOp extends OpMode {
 
     @Override
     public void start() {
-
-        // follower.setPose(FollowerStorage.autonomousEndPose);
-        // follower.update();
+        follower.setPose(FollowerStorage.autonomousEndPose);
+        follower.update();
     }
 
 
