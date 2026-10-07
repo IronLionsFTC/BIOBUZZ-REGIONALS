@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.MAX_HOOD_ANGLE;
-import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.MAX_SERVO_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.MIN_HOOD_ANGLE;
-import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.MIN_SERVO_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.NECTAR_MAX_SERVO_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.NECTAR_MIN_SERVO_POSITION;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -38,10 +38,10 @@ public class NectarHood {
         );
 
         double servoPosition =
-                MIN_SERVO_POSITION
+                NECTAR_MIN_SERVO_POSITION
                         + (targetAngle - MIN_HOOD_ANGLE)
                         / (MAX_HOOD_ANGLE - MIN_HOOD_ANGLE)
-                        * (MAX_SERVO_POSITION - MIN_SERVO_POSITION);
+                        * (NECTAR_MAX_SERVO_POSITION - NECTAR_MIN_SERVO_POSITION);
 
         servo.setPosition(servoPosition);
     }

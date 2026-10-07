@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.constants;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
 public class ShooterConstants {
 
     // ===================
@@ -14,12 +17,18 @@ public class ShooterConstants {
     // ===================
     // Pollen Hood Items
     // ===================
-    public static double POLLEN_HOOD_RATIO = 9.0;
     public static final double MIN_HOOD_ANGLE = 0.0;
     public static final double MAX_HOOD_ANGLE = 30.0;
 
-    public static final double MIN_SERVO_POSITION = 0.0;
-    public static final double MAX_SERVO_POSITION = 0.75;
+    public static final double POLLEN_MIN_SERVO_POSITION = 0.0;
+    public static final double POLLEN_MAX_SERVO_POSITION = 0.7685;
+
+    // ===================
+    //  Nectar Hood Items
+    // ===================
+
+    public static final double NECTAR_MIN_SERVO_POSITION = 0.0;
+    public static final double NECTAR_MAX_SERVO_POSITION = 0.75;
 
     // ===================
     //  Shooter Blocker

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.GoToPoint;
-import org.firstinspires.ftc.teamcode.commands.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.commands.Localise;
 import org.firstinspires.ftc.teamcode.commands.Shoot;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
@@ -96,6 +96,8 @@ public class RedTeleOp extends OpMode {
 
         if (gamepad1.left_trigger_pressed) {
             intake.intake();
+        } else {
+            intake.stop();
         }
 
 
