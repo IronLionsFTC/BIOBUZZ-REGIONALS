@@ -19,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 import org.firstinspires.ftc.teamcode.subsystems.NectarHood;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redLocalisationPoint;
 
@@ -36,8 +37,10 @@ public class RedTeleOp extends OpMode {
     private Shooter shooter;
     private Shoot shoot;
     private Intake intake;
+    private ShooterBlocker shooterBlocker;
     private ShooterLookupTables shooterLookupTables;
 
+    private boolean previousRightTrigger = false;
 
     private AimingTargetMath aimingTargetMath;
 
@@ -59,8 +62,9 @@ public class RedTeleOp extends OpMode {
         pollenHood = new PollenHood(hardwareMap);
         nectarHood = new NectarHood(hardwareMap);
 
-        shoot = new Shoot(hardwareMap);
         intake = new Intake(hardwareMap);
+        shooterBlocker = new ShooterBlocker(hardwareMap);
+        shoot = new Shoot(intake, shooterBlocker);
 
         shooterLookupTables = new ShooterLookupTables();
 
@@ -90,14 +94,19 @@ public class RedTeleOp extends OpMode {
             aiming.toggle();
         }
 
-        if (gamepad1.right_trigger_pressed) {
+        if (gamepad1.right_trigger > 0.5 && !previousRightTrigger) {
             shoot.shoot();
         }
+        previousRightTrigger = gamepad1.right_trigger > 0.5;
 
-        if (gamepad1.left_trigger_pressed) {
-            intake.intake();
-        } else {
-            intake.stop();
+        shoot.update();
+
+        if (!shoot.isShooting()) {
+            if (gamepad1.left_trigger > 0.5) {
+                intake.intake();
+            } else {
+                intake.stop();
+            }
         }
 
 
@@ -158,4 +167,3 @@ public class RedTeleOp extends OpMode {
 
     }
 }
-
