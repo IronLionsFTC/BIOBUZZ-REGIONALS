@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.commands;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -33,6 +34,7 @@ public class Shoot {
 
         timer.reset();
     }
+
     public void update() {
         if (!shooting) {
             return;

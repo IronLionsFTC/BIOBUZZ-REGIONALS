@@ -17,10 +17,11 @@ public class ShooterLookupTables {
         // Pollen Look-Up Tables (TO BE REPLACED WITH REAL VALUES)
         // ========================================================
 
-        shooterRPM.add(20, 0.0);
-        shooterRPM.add(30, 0.2);
-        shooterRPM.add(40, 0.4);
-        shooterRPM.add(50, 0.7);
+        shooterRPM.add(20, 1000);
+        shooterRPM.add(30, 1500);
+        shooterRPM.add(40, 2000);
+        shooterRPM.add(50, 2500);
+        shooterRPM.add(80, 3000);
         shooterRPM.createLUT();
 
 
