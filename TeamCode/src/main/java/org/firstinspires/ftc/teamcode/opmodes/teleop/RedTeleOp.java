@@ -64,7 +64,7 @@ public class RedTeleOp extends OpMode {
 
         intake = new Intake(hardwareMap);
         shooterBlocker = new ShooterBlocker(hardwareMap);
-        shoot = new Shoot(intake, shooterBlocker);
+        shoot = new Shoot(intake, shooterBlocker, shooter);
 
         shooterLookupTables = new ShooterLookupTables();
 
@@ -115,7 +115,7 @@ public class RedTeleOp extends OpMode {
         // ==================
 
         double forward = -gamepad1.left_stick_y;
-        double strafe = -gamepad1.left_stick_x;
+        double strafe = gamepad1.left_stick_x;
         double turn;
 
         if (aiming.isActive()) {
@@ -142,7 +142,8 @@ public class RedTeleOp extends OpMode {
         double nectarTargetHood = shooterLookupTables.getNectarHood(shootingDistance);
         double pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
 
-        shooter.setTargetPower(targetRPM);
+        shooter.setTargetRPM(targetRPM);
+        shooter.update();
 
         pollenHood.setAngle(pollenTargetHood);
         nectarHood.setAngle(nectarTargetHood);
@@ -161,9 +162,35 @@ public class RedTeleOp extends OpMode {
         telemetry.addData("Robot Target Y", aimingTargetMath.getTargetY());
         telemetry.addData("Robot Direct Distance from Target", aimingTargetMath.getDistanceToTarget());
         telemetry.addData("Target RPM of Shooters", targetRPM);
+
+        telemetry.addData("Measured Shooter RPM", "%.0f", shooter.getCurrentRPM());
+        telemetry.addData("Shooter RPM Error", "%+.0f", shooter.getRPMError());
+        telemetry.addData("Shooter Motor Power", "%.3f", shooter.getOutputPower());
+        telemetry.addData("Shooter Ready", shooter.isReady());
+
         telemetry.addData("Pollen Target Hood", pollenTargetHood);
         telemetry.addData("Nectar Target Hood", nectarTargetHood);
         telemetry.update();
 
+    }
+
+    @Override
+    public void stop() {
+
+        if (shoot != null) {
+            shoot.cancel();
+        }
+
+        if (intake != null) {
+            intake.stop();
+        }
+
+        if (shooter != null) {
+            shooter.stop();
+        }
+
+        if (shooterBlocker != null) {
+            shooterBlocker.close();
+        }
     }
 }

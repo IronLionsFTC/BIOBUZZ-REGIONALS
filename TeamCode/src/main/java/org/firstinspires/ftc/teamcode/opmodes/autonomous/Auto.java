@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -17,15 +16,20 @@ import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.commands.Commands.lazy;
+import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
+import org.firstinspires.ftc.teamcode.commands.Shoot;
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.HiveVision;
 import org.firstinspires.ftc.teamcode.subsystems.DetectHiveSide;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
+import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
 @Autonomous
 public class Auto extends OpMode {
@@ -35,6 +39,12 @@ public class Auto extends OpMode {
     private PollenHood pollenHood;
     private AimingTargetMath aimingTargetMath;
     private ShooterLookupTables shooterLookupTables;
+
+    private Shooter shooter;
+    private Intake intake;
+    private ShooterBlocker shooterBlocker;
+    private Shoot shoot;
+    private boolean shooterEnabled = true;
 
     // Hive vision system
     private HiveVision hiveVision;
@@ -86,20 +96,43 @@ public class Auto extends OpMode {
     }
 
 
+    // Start a firing burst and wait until the shooting state machine finishes.
+    private Command shootBurstCommand() {
+        return lazy(() -> {
+            shoot.shoot();
+            return waitUntil(() -> !shoot.isShooting());
+        });
+    }
+
+
     // IVY COMMAND ///////////////////////////////////////////////////////////////////////////////
 
     private Command mainAuto(Follower follower) {
         return sequential(
                 follow(follower, shootPreloads()),
-                waitMs(1000),
+                shootBurstCommand(),
                 follow(follower, goToBallSpike()),
                 follow(follower, goToNorthShooting()),
-                waitMs(1000),
-                follow(follower, intakeNorthFlower()),
+                shootBurstCommand(),
+                lazy(() -> {
+                    intake.intake();
+                    return follow(follower, intakeNorthFlower());
+                }),
                 waitMs(500),
+                lazy(() -> {
+                    intake.stop();
+                    return waitMs(0);
+                }),
                 follow(follower, shootFlowerBalls()),
-                waitMs(1000),
-                follow(follower, goToPark())
+                shootBurstCommand(),
+                follow(follower, goToPark()),
+                lazy(() -> {
+                    shooterEnabled = false;
+                    shoot.cancel();
+                    intake.stop();
+                    shooter.stop();
+                    return waitMs(0);
+                })
 
                 // Below is the theoretical
 //                detectHiveSide.scanCommand(),
@@ -139,6 +172,18 @@ public class Auto extends OpMode {
         pollenHood = new PollenHood(hardwareMap);
         shooterLookupTables = new ShooterLookupTables();
 
+        shooter = new Shooter(hardwareMap);
+        intake = new Intake(hardwareMap);
+        shooterBlocker = new ShooterBlocker(hardwareMap);
+
+        shoot = new Shoot(
+                intake,
+                shooterBlocker,
+                shooter
+        );
+
+        shooterEnabled = true;
+
         telemetry = new MultipleTelemetry(
                 telemetry,
                 FtcDashboard.getInstance().getTelemetry()
@@ -165,6 +210,15 @@ public class Auto extends OpMode {
 
         // Run hood code
         double shootingDistance = aimingTargetMath.getDistanceToTarget();
+
+        if (shooterEnabled) {
+            double targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
+            shooter.setTargetRPM(targetRPM);
+            shooter.update();
+        }
+
+        shoot.update();
+
         double pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
         pollenHood.setAngle(pollenTargetHood);
 
@@ -175,6 +229,13 @@ public class Auto extends OpMode {
         telemetry.addData("Busy", follower.isBusy());
         telemetry.addData("Completion", follower.completion());
         telemetry.addData("Hood Angle", pollenTargetHood);
+
+        telemetry.addData("Target RPM", shooter.getTargetRPM());
+        telemetry.addData("Measured Shooter RPM", "%.0f", shooter.getCurrentRPM());
+        telemetry.addData("Shooter RPM Error", "%+.0f", shooter.getRPMError());
+        telemetry.addData("Shooter Motor Power", "%.3f", shooter.getOutputPower());
+        telemetry.addData("Shooter Ready", shooter.isReady());
+        telemetry.addData("Shooting State Active", shoot.isShooting());
 
         // Add HIVE detection data
         telemetry.addData("Hive Side", detectHiveSide.getResult());
@@ -187,6 +248,25 @@ public class Auto extends OpMode {
 
     @Override
     public void stop() {
+
+        shooterEnabled = false;
+
+        if (shoot != null) {
+            shoot.cancel();
+        }
+
+        if (intake != null) {
+            intake.stop();
+        }
+
+        if (shooter != null) {
+            shooter.stop();
+        }
+
+        if (shooterBlocker != null) {
+            shooterBlocker.close();
+        }
+
         if (hiveVision != null) {
             hiveVision.close();
         }

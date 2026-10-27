@@ -15,8 +15,8 @@ public class ZeroServo extends OpMode {
     public Servo servo2;
 
     public void init(){
-        servo1 = hardwareMap.get(Servo.class, "hood1");
-        servo2 = hardwareMap.get(Servo.class, "hood2");
+        servo1 = hardwareMap.get(Servo.class, "pollenHood");
+        servo2 = hardwareMap.get(Servo.class, "nectarHood");
 
 
 

@@ -1,235 +1,294 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.SHOOTER_KD;
-import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.SHOOTER_KI;
-import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.SHOOTER_KP;
-
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.Range;
-import com.seattlesolvers.solverslib.hardware.motors.Motor;
-import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
+@Config
 public class Shooter {
 
     private static final String MOTOR_NAME_1 = "shooter1";
     private static final String MOTOR_NAME_2 = "shooter2";
 
-    private static final boolean MOTOR_1_INVERTED = false;
-    private static final boolean MOTOR_2_INVERTED = false;
+    public static double TICKS_PER_REV = 28.0;
+    public static double NO_LOAD_RPM = 5800.0;
+    public static double NOMINAL_VOLTAGE = 12.0;
+
+    public static double kF = 1.0;
+    public static double kP = 0.00010;
+    public static double kI = 0.0;
+
+    public static double MAX_INTEGRAL = 5000.0;
+
+    public static double READY_TOLERANCE_RPM = 75.0;
+    public static double READY_STABLE_MS = 150.0;
 
     private static final double POWER_BAND = 0.02;
 
-    private final MotorEx motor1;
-    private final MotorEx motor2;
+    private final DcMotorEx motor1;
+    private final DcMotorEx motor2;
+    private final DcMotorEx encoderMotor;
+    private final Iterable<VoltageSensor> voltageSensors;
 
-    private final PID motor1PID = new PID();
-    private final PID motor2PID = new PID();
+    private double targetRPM = 0.0;
+    private double integral = 0.0;
+    private double lastMotorPower = 0.0;
 
-    private double targetPower = 0.0;
-
-    private long lastUpdateTime;
+    private long lastUpdateTimeNs;
+    private long readySinceNs = 0;
 
     public Shooter(HardwareMap hardwareMap) {
 
-        motor1 = new MotorEx(
-                hardwareMap,
+        motor1 = hardwareMap.get(
+                DcMotorEx.class,
                 MOTOR_NAME_1
         );
 
-        motor1.setInverted(MOTOR_1_INVERTED);
-        motor1.setRunMode(Motor.RunMode.RawPower);
-
-
-        motor2 = new MotorEx(
-                hardwareMap,
+        motor2 = hardwareMap.get(
+                DcMotorEx.class,
                 MOTOR_NAME_2
         );
 
-        motor2.setInverted(MOTOR_2_INVERTED);
-        motor2.setRunMode(Motor.RunMode.RawPower);
+        motor1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        lastUpdateTime = System.nanoTime();
+        motor1.setPower(0.0);
+        motor2.setPower(0.0);
+
+        // Change this to motor1 only if the encoder is connected to shooter1.
+        encoderMotor = motor2;
+
+        voltageSensors = hardwareMap.voltageSensor;
+
+        lastUpdateTimeNs = System.nanoTime();
     }
 
+    public void setTargetRPM(double rpm) {
 
-    public void setTargetPower(double power) {
+        if (Double.isNaN(rpm) || Double.isInfinite(rpm)) {
+            rpm = 0.0;
+        }
 
-        targetPower = Range.clip(
-                power,
+        double maxRPM = Math.max(1.0, NO_LOAD_RPM);
+
+        double newTarget = Range.clip(
+                rpm,
                 0.0,
-                1.0
+                maxRPM
         );
-    }
 
+        double targetChange = Math.max(
+                25.0,
+                Math.abs(READY_TOLERANCE_RPM)
+        );
+
+        if (Math.abs(newTarget - targetRPM) > targetChange) {
+            readySinceNs = 0;
+        }
+
+        targetRPM = newTarget;
+
+        if (targetRPM <= 0.0) {
+            integral = 0.0;
+            readySinceNs = 0;
+        }
+    }
 
     public void update() {
 
-        long currentTime = System.nanoTime();
+        long now = System.nanoTime();
 
-        double dt = (currentTime - lastUpdateTime) / 1_000_000_000.0;
-
-        lastUpdateTime = currentTime;
+        double dt = (now - lastUpdateTimeNs) / 1_000_000_000.0;
+        lastUpdateTimeNs = now;
 
         if (dt <= 0.0 || dt > 0.1) {
             dt = 0.02;
         }
 
-        double targetVelocity1 =
-                targetPower * motor1.ACHIEVABLE_MAX_TICKS_PER_SECOND;
+        double target = targetRPM;
+        double measuredRPM = getCurrentRPM();
+        double error = target - measuredRPM;
 
-        double targetVelocity2 =
-                targetPower * motor2.ACHIEVABLE_MAX_TICKS_PER_SECOND;
+        double motorPower = 0.0;
 
-        double currentVelocity1 =
-                Math.abs(motor1.getVelocity());
+        if (target > 0.0) {
 
-        double currentVelocity2 =
-                Math.abs(motor2.getVelocity());
+            double maxRPM = Math.max(1.0, NO_LOAD_RPM);
+            double nominalVoltage = Math.max(1.0, NOMINAL_VOLTAGE);
+            double batteryVoltage = Math.max(6.0, getBatteryVoltage());
 
-        double output1 = motor1PID.calculate(
-                targetVelocity1,
-                currentVelocity1,
-                dt,
-                targetPower
-        );
+            double feedForward =
+                    kF
+                            * (target / maxRPM)
+                            * (nominalVoltage / batteryVoltage);
 
-        double output2 = motor2PID.calculate(
-                targetVelocity2,
-                currentVelocity2,
-                dt,
-                targetPower
-        );
+            double integralLimit = Math.abs(MAX_INTEGRAL);
 
-        motor1.set(output1);
-        motor2.set(output2);
+            double candidateIntegral = Range.clip(
+                    integral + error * dt,
+                    -integralLimit,
+                    integralLimit
+            );
+
+            double candidatePower =
+                    feedForward
+                            + kP * error
+                            + kI * candidateIntegral;
+
+            // Prevent integral windup when the motor output is saturated.
+            if ((candidatePower >= 0.0 && candidatePower <= 1.0)
+                    || (candidatePower > 1.0 && error < 0.0)
+                    || (candidatePower < 0.0 && error > 0.0)) {
+
+                integral = candidateIntegral;
+            }
+
+            motorPower = Range.clip(
+                    feedForward
+                            + kP * error
+                            + kI * integral,
+                    0.0,
+                    1.0
+            );
+
+        } else {
+
+            integral = 0.0;
+            readySinceNs = 0;
+        }
+
+        lastMotorPower = motorPower;
+
+        // The two motors rotate in opposite electrical directions.
+        // Their power magnitudes are controlled by one shared feedback loop.
+        motor1.setPower(motorPower);
+        motor2.setPower(-motorPower);
+
+        // Readiness requires a continuous period inside the RPM tolerance.
+        if (target > 0.0
+                && Math.abs(error) <= Math.max(0.0, READY_TOLERANCE_RPM)) {
+
+            if (readySinceNs == 0) {
+                readySinceNs = now;
+            }
+
+        } else {
+
+            readySinceNs = 0;
+        }
     }
 
+    public double getTargetRPM() {
+        return targetRPM;
+    }
+
+    public double getCurrentRPM() {
+
+        double ticksPerRev = Math.max(1.0, TICKS_PER_REV);
+
+        return Math.abs(encoderMotor.getVelocity())
+                * 60.0 / ticksPerRev;
+    }
+
+    public double getRPMError() {
+        return targetRPM - getCurrentRPM();
+    }
+
+    public double getEncoderVelocityTicksPerSecond() {
+        return encoderMotor.getVelocity();
+    }
+
+    public int getEncoderPosition() {
+        return encoderMotor.getCurrentPosition();
+    }
+
+    public boolean isReady() {
+
+        if (targetRPM <= 0.0 || readySinceNs == 0) {
+            return false;
+        }
+
+        long stableTimeNs =
+                (long) (Math.max(0.0, READY_STABLE_MS) * 1_000_000.0);
+
+        return System.nanoTime() - readySinceNs >= stableTimeNs
+                && Math.abs(getRPMError())
+                <= Math.max(0.0, READY_TOLERANCE_RPM);
+    }
+
+    public double getOutputPower() {
+        return lastMotorPower;
+    }
+
+    public double getBatteryVoltage() {
+
+        double lowestVoltage = Double.POSITIVE_INFINITY;
+
+        for (VoltageSensor sensor : voltageSensors) {
+
+            double voltage = sensor.getVoltage();
+
+            if (voltage > 1.0 && voltage < lowestVoltage) {
+                lowestVoltage = voltage;
+            }
+        }
+
+        if (Double.isInfinite(lowestVoltage)) {
+            return NOMINAL_VOLTAGE;
+        }
+
+        return lowestVoltage;
+    }
+
+    // Compatibility methods for existing code that uses normalized power.
+
+    public void setTargetPower(double power) {
+
+        double maxRPM = Math.max(1.0, NO_LOAD_RPM);
+
+        setTargetRPM(
+                Range.clip(power, 0.0, 1.0) * maxRPM
+        );
+    }
 
     public double getTargetPower() {
 
-        return targetPower;
+        return targetRPM / Math.max(1.0, NO_LOAD_RPM);
     }
-
 
     public double getCurrentPower() {
 
-        double motor1Power =
-                Math.abs(motor1.getVelocity())
-                        / motor1.ACHIEVABLE_MAX_TICKS_PER_SECOND;
-
-        double motor2Power =
-                Math.abs(motor2.getVelocity())
-                        / motor2.ACHIEVABLE_MAX_TICKS_PER_SECOND;
-
-        return (
-                motor1Power
-                        + motor2Power
-        ) / 2.0;
+        return Range.clip(
+                getCurrentRPM() / Math.max(1.0, NO_LOAD_RPM),
+                0.0,
+                1.0
+        );
     }
-
 
     public boolean isAtTargetPower() {
-
-        return Math.abs(
-                getCurrentPower() - targetPower
-        ) <= POWER_BAND;
+        return isAtTargetPower(POWER_BAND);
     }
-
 
     public boolean isAtTargetPower(double tolerance) {
 
         return Math.abs(
-                getCurrentPower() - targetPower
+                getCurrentPower() - getTargetPower()
         ) <= tolerance;
     }
 
-
-    public double getOutputPower() {
-
-        return (
-                Math.abs(motor1.getRawPower())
-                        + Math.abs(motor2.getRawPower())
-        ) / 2.0;
-    }
-
-
     public void stop() {
 
-        targetPower = 0.0;
+        targetRPM = 0.0;
+        integral = 0.0;
+        lastMotorPower = 0.0;
+        readySinceNs = 0;
 
-        motor1PID.reset();
-        motor2PID.reset();
+        motor1.setPower(0.0);
+        motor2.setPower(0.0);
 
-        motor1.stopMotor();
-        motor2.stopMotor();
-
-        lastUpdateTime = System.nanoTime();
-    }
-
-
-    private static class PID {
-
-        private double integral = 0.0;
-        private double lastError = 0.0;
-
-        public double calculate(
-                double targetVelocity,
-                double currentVelocity,
-                double dt,
-                double targetPower
-        ) {
-
-            double error =
-                    targetVelocity - currentVelocity;
-
-
-            double derivative =
-                    (error - lastError) / dt;
-
-
-            double proportional =
-                    SHOOTER_KP * error;
-
-            double integralTerm =
-                    SHOOTER_KI * integral;
-
-            double derivativeTerm =
-                    SHOOTER_KD * derivative;
-
-
-            double correction =
-                    proportional
-                            + integralTerm
-                            + derivativeTerm;
-
-
-            double output =
-                    targetPower + correction;
-
-
-            double clippedOutput =
-                    Range.clip(
-                            output,
-                            0.0,
-                            1.0
-                    );
-
-
-            if (output == clippedOutput) {
-                integral += error * dt;
-            }
-
-
-            lastError = error;
-
-            return clippedOutput;
-        }
-
-
-        public void reset() {
-
-            integral = 0.0;
-            lastError = 0.0;
-        }
+        lastUpdateTimeNs = System.nanoTime();
     }
 }

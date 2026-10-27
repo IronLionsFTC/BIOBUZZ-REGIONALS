@@ -1,60 +1,161 @@
-
 package org.firstinspires.ftc.teamcode.commands;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
+@Config
 public class Shoot {
+
+    public static double SHOOT_DURATION_SECONDS = 2.0;
+    public static double FEED_PULSE_SECONDS = 0.18;
+    public static double RECOVERY_MIN_SECONDS = 0.08;
+    public static double MAX_READY_WAIT_SECONDS = 2.0;
+
+    private enum State {
+        IDLE,
+        WAITING_FOR_READY,
+        FEEDING,
+        RECOVERING
+    }
 
     private final Intake intake;
     private final ShooterBlocker shooterBlocker;
-    private final ElapsedTime timer = new ElapsedTime();
+    private final Shooter shooter;
 
-    private static final double SHOOT_DURATION = 1.5;
+    private final ElapsedTime phaseTimer = new ElapsedTime();
+    private final ElapsedTime burstTimer = new ElapsedTime();
 
-    private boolean shooting = false;
+    private State state = State.IDLE;
 
-    public Shoot(Intake intake, ShooterBlocker shooterBlocker) {
+    public Shoot(
+            Intake intake,
+            ShooterBlocker shooterBlocker,
+            Shooter shooter
+    ) {
+
         this.intake = intake;
         this.shooterBlocker = shooterBlocker;
+        this.shooter = shooter;
     }
 
-    // Call this when the driver presses the shoot button.
     public void shoot() {
-        if (shooting) {
+
+        if (state != State.IDLE) {
             return;
         }
 
-        shooting = true;
+        state = State.WAITING_FOR_READY;
 
-        shooterBlocker.open();
-        intake.intake();
+        phaseTimer.reset();
 
-        timer.reset();
+        shooterBlocker.close();
+        intake.stop();
     }
 
     public void update() {
-        if (!shooting) {
-            return;
-        }
 
-        if (timer.seconds() >= SHOOT_DURATION) {
-            intake.stop();
-            shooterBlocker.close();
+        switch (state) {
 
-            shooting = false;
+            case IDLE:
+                return;
+
+            case WAITING_FOR_READY:
+
+                shooterBlocker.close();
+                intake.stop();
+
+                if (shooter.isReady()) {
+
+                    beginBurst();
+
+                } else if (
+                        phaseTimer.seconds()
+                                >= Math.max(0.0, MAX_READY_WAIT_SECONDS)
+                ) {
+
+                    finish();
+                }
+
+                break;
+
+            case FEEDING:
+
+                if (burstTimer.seconds()
+                        >= Math.max(0.0, SHOOT_DURATION_SECONDS)) {
+
+                    finish();
+                    return;
+                }
+
+                if (phaseTimer.seconds()
+                        >= Math.max(0.02, FEED_PULSE_SECONDS)) {
+
+                    shooterBlocker.close();
+
+                    state = State.RECOVERING;
+                    phaseTimer.reset();
+                }
+
+                break;
+
+            case RECOVERING:
+
+                if (burstTimer.seconds()
+                        >= Math.max(0.0, SHOOT_DURATION_SECONDS)) {
+
+                    finish();
+                    return;
+                }
+
+                // Keep the intake running while the closed blockers hold
+                // the next ball back from the shooter.
+                intake.intake();
+                shooterBlocker.close();
+
+                if (phaseTimer.seconds()
+                        >= Math.max(0.0, RECOVERY_MIN_SECONDS)
+                        && shooter.isReady()) {
+
+                    beginFeedPulse();
+                }
+
+                break;
         }
+    }
+
+    private void beginBurst() {
+
+        burstTimer.reset();
+
+        beginFeedPulse();
+    }
+
+    private void beginFeedPulse() {
+
+        state = State.FEEDING;
+        phaseTimer.reset();
+
+        shooterBlocker.open();
+        intake.intake();
+    }
+
+    private void finish() {
+
+        state = State.IDLE;
+
+        intake.stop();
+        shooterBlocker.close();
     }
 
     public boolean isShooting() {
-        return shooting;
+        return state != State.IDLE;
     }
 
     public void cancel() {
-        intake.stop();
-        shooterBlocker.close();
-        shooting = false;
+        finish();
     }
 }
