@@ -34,15 +34,15 @@ public class ShooterConstants {
     //  Shooter Blocker
     // ===================
 
-    public static final double SHOOTER_BLOCKER_CLOSED_POSITION = 0.0;
-    public static final double SHOOTER_BLOCKER_OPEN_POSITION = 1.0;
+    public static double SHOOTER_BLOCKER_CLOSED_POSITION = 0.0;
+    public static double SHOOTER_BLOCKER_OPEN_POSITION = 1.0;
 
     // ==========================
     // Intake and Transfer Power
     // ==========================
 
-    public static final double INTAKE_DEFAULT_POWER = 1.0;
-    public static final double TRANSFER_DEFAULT_POWER = 1.0;
+    public static final double INTAKE_DEFAULT_POWER = 0.6;
+    public static final double TRANSFER_DEFAULT_POWER = 0.4;
 
 
 }

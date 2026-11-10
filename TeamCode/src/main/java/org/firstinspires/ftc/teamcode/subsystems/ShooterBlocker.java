@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.SHOOTER_BLOCKER_CLOSED_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.ShooterConstants.SHOOTER_BLOCKER_OPEN_POSITION;
+
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -15,13 +18,13 @@ public class ShooterBlocker {
     }
 
     public void close() {
-        shooterBlocker1.setPosition(0.0);
-        shooterBlocker2.setPosition(0.0);
+        shooterBlocker1.setPosition(SHOOTER_BLOCKER_CLOSED_POSITION);
+        shooterBlocker2.setPosition(SHOOTER_BLOCKER_CLOSED_POSITION);
     }
 
     public void open() {
-        shooterBlocker1.setPosition(0.8);
-        shooterBlocker2.setPosition(0.8);
+        shooterBlocker1.setPosition(SHOOTER_BLOCKER_OPEN_POSITION);
+        shooterBlocker2.setPosition(SHOOTER_BLOCKER_OPEN_POSITION);
     }
 
 }

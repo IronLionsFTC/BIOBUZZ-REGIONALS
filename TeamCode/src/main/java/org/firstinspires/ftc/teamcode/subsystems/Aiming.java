@@ -21,22 +21,17 @@ import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
  *
  * Automatically aims at:
  *
- *      Y >= 0 -> North target
- *      Y <  0 -> South target
+ *      Y >= 68 -> North goal
+ *      Y <  68 -> South goal
  *
  * The robot can drive while aiming.
  *
- * The controller uses:
  *
  *      Turn Power = KP * angle error
- *                   - KD * angular velocity
+ *                   - KD * angular velocity --> calcluated from angle / time^2 basically
  *
- * KP makes the robot turn toward the target.
- * KD slows the robot down as it is already rotating.
- *
- * This prevents the large oscillations that happen
- * when the derivative is calculated from heading error
- * while the target angle is also changing.
+ * KP makes the robot turn toward the target proportionally
+ * KD slows the robot down as it is already rotating to prevent overshooting
  *
  * =========================================
  */
@@ -117,7 +112,7 @@ public class Aiming {
             return 0.0;
         }
 
-        // Update which target we are aiming at
+        // Update which target we're aiming at
         aimingTargetCalculator.updateTarget();
 
         Pose robotPose = follower.pose();
@@ -138,7 +133,7 @@ public class Aiming {
         );
 
         // ===================================================
-        // Deadband to prevent jittering (currently 1 degree)
+        // Deadband to prevent jittering
         // ===================================================
 
         double deadband = Math.toRadians(AIM_DEADBAND_DEGREES);
@@ -151,7 +146,7 @@ public class Aiming {
         }
 
         // =========================================
-        // Calculate change in time
+        // change in time (FOR THE PID LOOP)
         // =========================================
 
         long currentTime = System.nanoTime();
@@ -175,7 +170,7 @@ public class Aiming {
         );
 
         // =========================================
-        // Calculate change in heading
+        // change in heading
         // =========================================
 
         double headingChange = normalizeAngle(

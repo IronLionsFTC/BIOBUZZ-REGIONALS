@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.GoToPoint;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
 import org.firstinspires.ftc.teamcode.commands.Localise;
 import org.firstinspires.ftc.teamcode.commands.Shoot;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
@@ -23,9 +23,6 @@ import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redLocalisationPoint;
 
-
-
-
 @TeleOp
 public class RedTeleOp extends OpMode {
 
@@ -36,14 +33,13 @@ public class RedTeleOp extends OpMode {
     private NectarHood nectarHood;
     private Shooter shooter;
     private Shoot shoot;
-    private Intake intake;
+    private IntakeTransfer intakeTransfer;
     private ShooterBlocker shooterBlocker;
     private ShooterLookupTables shooterLookupTables;
 
     private boolean previousRightTrigger = false;
 
     private AimingTargetMath aimingTargetMath;
-
 
 
     @Override
@@ -62,9 +58,9 @@ public class RedTeleOp extends OpMode {
         pollenHood = new PollenHood(hardwareMap);
         nectarHood = new NectarHood(hardwareMap);
 
-        intake = new Intake(hardwareMap);
+        intakeTransfer = new IntakeTransfer(hardwareMap);
         shooterBlocker = new ShooterBlocker(hardwareMap);
-        shoot = new Shoot(intake, shooterBlocker, shooter);
+        shoot = new Shoot(intakeTransfer, shooterBlocker);
 
         shooterLookupTables = new ShooterLookupTables();
 
@@ -94,20 +90,16 @@ public class RedTeleOp extends OpMode {
             aiming.toggle();
         }
 
-        if (gamepad1.right_trigger > 0.5 && !previousRightTrigger) {
+        if (gamepad1.right_trigger_pressed) {
             shoot.shoot();
         }
-        previousRightTrigger = gamepad1.right_trigger > 0.5;
+        else
+            shoot.noShoot();
 
-        shoot.update();
-
-        if (!shoot.isShooting()) {
-            if (gamepad1.left_trigger > 0.5) {
-                intake.intake();
-            } else {
-                intake.stop();
-            }
+        if (gamepad1.left_trigger_pressed) {
+            intakeTransfer.run();
         }
+        else intakeTransfer.stop();
 
 
         // ==================
@@ -165,7 +157,7 @@ public class RedTeleOp extends OpMode {
 
         telemetry.addData("Measured Shooter RPM", "%.0f", shooter.getCurrentRPM());
         telemetry.addData("Shooter RPM Error", "%+.0f", shooter.getRPMError());
-        telemetry.addData("Shooter Motor Power", "%.3f", shooter.getOutputPower());
+        telemetry.addData(  "Shooter Motor Power", "%.3f", shooter.getOutputPower());
         telemetry.addData("Shooter Ready", shooter.isReady());
 
         telemetry.addData("Pollen Target Hood", pollenTargetHood);
@@ -177,12 +169,8 @@ public class RedTeleOp extends OpMode {
     @Override
     public void stop() {
 
-        if (shoot != null) {
-            shoot.cancel();
-        }
-
-        if (intake != null) {
-            intake.stop();
+        if (intakeTransfer != null) {
+            intakeTransfer.stop();
         }
 
         if (shooter != null) {

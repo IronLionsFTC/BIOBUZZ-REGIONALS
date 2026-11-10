@@ -27,7 +27,7 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.HiveVision;
 import org.firstinspires.ftc.teamcode.subsystems.DetectHiveSide;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
-import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
@@ -41,10 +41,11 @@ public class Auto extends OpMode {
     private ShooterLookupTables shooterLookupTables;
 
     private Shooter shooter;
-    private Intake intake;
+    private IntakeTransfer intake;
     private ShooterBlocker shooterBlocker;
     private Shoot shoot;
     private boolean shooterEnabled = true;
+    private boolean shootingActive = false;
 
     // Hive vision system
     private HiveVision hiveVision;
@@ -98,10 +99,19 @@ public class Auto extends OpMode {
 
     // Start a firing burst and wait until the shooting state machine finishes.
     private Command shootBurstCommand() {
-        return lazy(() -> {
-            shoot.shoot();
-            return waitUntil(() -> !shoot.isShooting());
-        });
+        return sequential(
+                waitUntil(() -> shooter.isReady()),
+                lazy(() -> {
+                    shoot.shoot();
+                    shootingActive = true;
+                    return waitMs(1000);
+                }),
+                lazy(() -> {
+                    shoot.noShoot();
+                    shootingActive = false;
+                    return waitMs(0);
+                })
+        );
     }
 
 
@@ -115,7 +125,7 @@ public class Auto extends OpMode {
                 follow(follower, goToNorthShooting()),
                 shootBurstCommand(),
                 lazy(() -> {
-                    intake.intake();
+                    intake.run();
                     return follow(follower, intakeNorthFlower());
                 }),
                 waitMs(500),
@@ -128,7 +138,8 @@ public class Auto extends OpMode {
                 follow(follower, goToPark()),
                 lazy(() -> {
                     shooterEnabled = false;
-                    shoot.cancel();
+                    shoot.noShoot();
+                    shootingActive = false;
                     intake.stop();
                     shooter.stop();
                     return waitMs(0);
@@ -155,7 +166,7 @@ public class Auto extends OpMode {
         );
     }
 
-    // TODO: Replace this with the actual South-side paths. Then continue this on
+    // *TODO: Replace this with the actual South-side paths. Then continue this on*
     private static Command southSideAuto(Follower follower) {
         return waitMs(0);
     }
@@ -173,13 +184,12 @@ public class Auto extends OpMode {
         shooterLookupTables = new ShooterLookupTables();
 
         shooter = new Shooter(hardwareMap);
-        intake = new Intake(hardwareMap);
+        intake = new IntakeTransfer(hardwareMap);
         shooterBlocker = new ShooterBlocker(hardwareMap);
 
         shoot = new Shoot(
                 intake,
-                shooterBlocker,
-                shooter
+                shooterBlocker
         );
 
         shooterEnabled = true;
@@ -217,8 +227,6 @@ public class Auto extends OpMode {
             shooter.update();
         }
 
-        shoot.update();
-
         double pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
         pollenHood.setAngle(pollenTargetHood);
 
@@ -235,7 +243,7 @@ public class Auto extends OpMode {
         telemetry.addData("Shooter RPM Error", "%+.0f", shooter.getRPMError());
         telemetry.addData("Shooter Motor Power", "%.3f", shooter.getOutputPower());
         telemetry.addData("Shooter Ready", shooter.isReady());
-        telemetry.addData("Shooting State Active", shoot.isShooting());
+        telemetry.addData("Shooting State Active", shootingActive);
 
         // Add HIVE detection data
         telemetry.addData("Hive Side", detectHiveSide.getResult());
@@ -252,8 +260,10 @@ public class Auto extends OpMode {
         shooterEnabled = false;
 
         if (shoot != null) {
-            shoot.cancel();
+            shoot.noShoot();
         }
+
+        shootingActive = false;
 
         if (intake != null) {
             intake.stop();

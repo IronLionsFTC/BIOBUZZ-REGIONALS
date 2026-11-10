@@ -1,3 +1,24 @@
+/// SHOOTER CODE IDEAS
+///  We want: --> balls to be able to rapid fire no drop.
+/// This likely means a _____ system (PID?)
+/// We want this to be as good as possible
+/// When a ball goes through it, and it drops, get back to speed as fast as possible
+///
+/// Need to:
+/// --> Get the target RPM
+/// --> Update the target RPM to maintain it
+///
+/// Mechanically it is quite weak. Thus, the code has to be spot on perfect.
+/// We need simple and very reliable,
+///
+/// look at inspo
+///
+///
+///
+///
+
+
+
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -18,7 +39,7 @@ public class Shooter {
     public static double NOMINAL_VOLTAGE = 12.0;
 
     public static double kF = 1.0;
-    public static double kP = 0.00010;
+    public static double kP = 0.00020;
     public static double kI = 0.0;
 
     public static double MAX_INTEGRAL = 5000.0;
