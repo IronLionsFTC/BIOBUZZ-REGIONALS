@@ -3,7 +3,7 @@ package org.firstinspires.ftc.teamcode.math;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_MIDDLE_POINT_Y;
+import static org.firstinspires.ftc.teamcode.constants.DriveConstants.MIDDLE_POINT_Y;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_NORTH_TARGET_X;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_NORTH_TARGET_Y;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_SOUTH_TARGET_X;
@@ -36,7 +36,7 @@ public class AimingTargetMath {
         Pose robotPose = follower.pose();
 
 
-        if (robotPose.y() >= RED_MIDDLE_POINT_Y) {
+        if (robotPose.y() >= MIDDLE_POINT_Y) {
 
             targetX = RED_NORTH_TARGET_X;
             targetY = RED_NORTH_TARGET_Y;

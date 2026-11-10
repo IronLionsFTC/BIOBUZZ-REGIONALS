@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
  *      Y >= 68 -> North goal
  *      Y <  68 -> South goal
  *
- * The robot can drive while aiming.
+ * The robot can drive while aiming
  *
  *
  *      Turn Power = KP * angle error

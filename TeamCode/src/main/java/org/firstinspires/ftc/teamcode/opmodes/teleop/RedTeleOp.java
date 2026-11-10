@@ -37,7 +37,6 @@ public class RedTeleOp extends OpMode {
     private ShooterBlocker shooterBlocker;
     private ShooterLookupTables shooterLookupTables;
 
-    private boolean previousRightTrigger = false;
 
     private AimingTargetMath aimingTargetMath;
 

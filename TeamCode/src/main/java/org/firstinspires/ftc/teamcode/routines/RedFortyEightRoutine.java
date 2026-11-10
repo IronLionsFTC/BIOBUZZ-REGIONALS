@@ -29,9 +29,9 @@ public final class RedFortyEightRoutine {
     }
 
 
-    // ==================== //
+    // ====================
     //    MAIN AUTO ROUTINE
-    // ==================== //
+    // ====================
 
     public static Command mainAuto(Follower follower) {
 
