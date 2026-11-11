@@ -71,7 +71,8 @@ public class Prefire extends OpMode {
                 waitMs(750),
                 deadline(
                 waitMs(1000),
-                shoot)
+                shoot
+                )
         );
     }
 

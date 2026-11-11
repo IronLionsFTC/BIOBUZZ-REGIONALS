@@ -18,13 +18,13 @@ public class ShooterBlocker {
     }
 
     public void close() {
-        shooterBlocker1.setPosition(0);
-        shooterBlocker2.setPosition(0);
+        shooterBlocker1.setPosition(SHOOTER_BLOCKER_CLOSED_POSITION);
+        shooterBlocker2.setPosition(SHOOTER_BLOCKER_CLOSED_POSITION);
     }
 
     public void open() {
-        shooterBlocker1.setPosition(1);
-        shooterBlocker2.setPosition(1);
+        shooterBlocker1.setPosition(SHOOTER_BLOCKER_OPEN_POSITION);
+        shooterBlocker2.setPosition(SHOOTER_BLOCKER_OPEN_POSITION);
     }
 
 }
