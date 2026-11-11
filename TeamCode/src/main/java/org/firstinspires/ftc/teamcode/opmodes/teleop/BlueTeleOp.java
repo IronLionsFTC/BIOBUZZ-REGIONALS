@@ -9,23 +9,24 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.commands.ColourChooser;
 import org.firstinspires.ftc.teamcode.commands.GoToPoint;
 import org.firstinspires.ftc.teamcode.commands.Localise;
-import org.firstinspires.ftc.teamcode.commands.Shoot;
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.Aiming;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
+import org.firstinspires.ftc.teamcode.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.subsystems.NectarHood;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
 
-/// When u can there needs to be a variable of BLUE or RED... aiming math needs to identify that before running
-/// so it can always aim at the right goal.
+// When u can there needs to be a variable of BLUE or RED... aiming math needs to identify that before running
+// so it can always aim at the right goal.
+
 @TeleOp
 public class BlueTeleOp extends OpMode {
 
@@ -36,7 +37,7 @@ public class BlueTeleOp extends OpMode {
     private NectarHood nectarHood;
     private Shooter shooter;
     private Shoot shoot;
-    private IntakeTransfer intakeTransfer;
+    private Transfer intakeTransfer;
     private ShooterBlocker shooterBlocker;
     private ShooterLookupTables shooterLookupTables;
     private AimingTargetMath aimingTargetMath;
@@ -44,6 +45,9 @@ public class BlueTeleOp extends OpMode {
 
     @Override
     public void init() {
+
+        ColourChooser.isRed = false;
+
         follower = Constants.create(hardwareMap);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -58,12 +62,11 @@ public class BlueTeleOp extends OpMode {
         pollenHood = new PollenHood(hardwareMap);
         nectarHood = new NectarHood(hardwareMap);
 
-        intakeTransfer = new IntakeTransfer(hardwareMap);
+        intakeTransfer = new Transfer(hardwareMap);
         shooterBlocker = new ShooterBlocker(hardwareMap);
         shoot = new Shoot(intakeTransfer, shooterBlocker);
 
         shooterLookupTables = new ShooterLookupTables();
-
 
 
     }
@@ -108,7 +111,7 @@ public class BlueTeleOp extends OpMode {
         // ==================
 
         double forward = -gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
+        double strafe = -gamepad1.left_stick_x;
         double turn;
 
         if (aiming.isActive()) {
@@ -158,14 +161,16 @@ public class BlueTeleOp extends OpMode {
 
         telemetry.addData("Measured Shooter RPM", "%.0f", shooter.getCurrentRPM());
         telemetry.addData("Shooter RPM Error", "%+.0f", shooter.getRPMError());
-        telemetry.addData(  "Shooter Motor Power", "%.3f", shooter.getOutputPower());
+        telemetry.addData("Shooter Motor Power", "%.3f", shooter.getOutputPower());
         telemetry.addData("Shooter Ready", shooter.isReady());
 
         telemetry.addData("Pollen Target Hood", pollenTargetHood);
         telemetry.addData("Nectar Target Hood", nectarTargetHood);
+
         telemetry.update();
 
     }
+
 
     @Override
     public void stop() {

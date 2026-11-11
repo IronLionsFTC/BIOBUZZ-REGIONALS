@@ -50,7 +50,9 @@ public final class AutonomousPoses {
             poseFactory.of(14.1, 116.5, 0);
 
     public static final Pose redLocalisationPoint =
-            poseFactory.of(8.6, 8.46, 270);
+            poseFactory.of(7.7, 9.1, 270);
+    public static final Pose blueLocalisationPoint =
+            poseFactory.of(134.2, 132.5, 90);
 
     public static final Pose redWaitForTilt =
             poseFactory.of(57.3, 105.1, 0);

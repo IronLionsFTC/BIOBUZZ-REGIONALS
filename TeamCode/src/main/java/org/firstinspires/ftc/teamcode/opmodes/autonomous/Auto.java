@@ -20,14 +20,13 @@ import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
-import org.firstinspires.ftc.teamcode.commands.Shoot;
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.HiveVision;
 import org.firstinspires.ftc.teamcode.subsystems.DetectHiveSide;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
+import org.firstinspires.ftc.teamcode.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
@@ -41,7 +40,7 @@ public class Auto extends OpMode {
     private ShooterLookupTables shooterLookupTables;
 
     private Shooter shooter;
-    private IntakeTransfer intake;
+    private Transfer intake;
     private ShooterBlocker shooterBlocker;
     private Shoot shoot;
     private boolean shooterEnabled = true;
@@ -121,21 +120,6 @@ public class Auto extends OpMode {
         return sequential(
                 follow(follower, shootPreloads()),
                 shootBurstCommand(),
-                follow(follower, goToBallSpike()),
-                follow(follower, goToNorthShooting()),
-                shootBurstCommand(),
-                lazy(() -> {
-                    intake.run();
-                    return follow(follower, intakeNorthFlower());
-                }),
-                waitMs(500),
-                lazy(() -> {
-                    intake.stop();
-                    return waitMs(0);
-                }),
-                follow(follower, shootFlowerBalls()),
-                shootBurstCommand(),
-                follow(follower, goToPark()),
                 lazy(() -> {
                     shooterEnabled = false;
                     shoot.noShoot();
@@ -144,31 +128,7 @@ public class Auto extends OpMode {
                     shooter.stop();
                     return waitMs(0);
                 })
-
-                // Below is the theoretical
-//                detectHiveSide.scanCommand(),
-//
-//
-//                lazy(() -> {
-//                    if (detectHiveSide.getResult()
-//                            == HiveVision.HiveSide.SOUTHSIDEUP) {
-//                        return southSideAuto(follower);
-//                    }
-//
-//                    return northSideAuto(follower);
-//                })
         );
-    }
-
-    // North route: preserves the original sequence.
-    private static Command northSideAuto(Follower follower) {
-        return sequential(
-        );
-    }
-
-    // *TODO: Replace this with the actual South-side paths. Then continue this on*
-    private static Command southSideAuto(Follower follower) {
-        return waitMs(0);
     }
 
 
@@ -184,7 +144,7 @@ public class Auto extends OpMode {
         shooterLookupTables = new ShooterLookupTables();
 
         shooter = new Shooter(hardwareMap);
-        intake = new IntakeTransfer(hardwareMap);
+        intake = new Transfer(hardwareMap);
         shooterBlocker = new ShooterBlocker(hardwareMap);
 
         shoot = new Shoot(
@@ -200,8 +160,8 @@ public class Auto extends OpMode {
         );
 
         // Initialise the webcam once.
-        hiveVision = new HiveVision(hardwareMap, "Webcam 1");
-        detectHiveSide = new DetectHiveSide(hiveVision, telemetry);
+     //   hiveVision = new HiveVision(hardwareMap, "Webcam 1");
+      //  detectHiveSide = new DetectHiveSide(hiveVision, telemetry);
 
         follower.setPose(redAutoStart);
         follower.update();
@@ -244,12 +204,6 @@ public class Auto extends OpMode {
         telemetry.addData("Shooter Motor Power", "%.3f", shooter.getOutputPower());
         telemetry.addData("Shooter Ready", shooter.isReady());
         telemetry.addData("Shooting State Active", shootingActive);
-
-        // Add HIVE detection data
-        telemetry.addData("Hive Side", detectHiveSide.getResult());
-        telemetry.addData("Hive Fallback Used", detectHiveSide.wasFallbackUsed());
-        telemetry.addData("Hive Red Clusters", hiveVision.getLastRedClusterCount());
-        telemetry.addData("Hive Detections", hiveVision.getLastSummary());
 
         telemetry.update();
     }

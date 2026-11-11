@@ -10,10 +10,10 @@ public class ShooterLookupTables {
     private final InterpLUT pollenHood = new InterpLUT();
 
     private final InterpLUT nectarHood = new InterpLUT();
-    public static double TWENTY_INCH_RPM = 2800;
-    public static double THIRTY_INCH_RPM = 3000;
-    public static double FOURTY_INCH_RPM = 3200;
-    public static double FIFTY_INCH_RPM = 3400;
+    public static double TWENTY_INCH_RPM = 3000;
+    public static double THIRTY_INCH_RPM = 3400;
+    public static double FOURTY_INCH_RPM = 3500;
+    public static double FIFTY_INCH_RPM = 3550;
     public static double SIXTY_INCH_RPN = 3600;
     public static double SEVENTY_INCH_RPM = 3800;
 

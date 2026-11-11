@@ -7,10 +7,11 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.commands.ColourChooser;
 import org.firstinspires.ftc.teamcode.commands.GoToPoint;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
+import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.commands.Localise;
-import org.firstinspires.ftc.teamcode.commands.Shoot;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
@@ -21,6 +22,8 @@ import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
+import static org.firstinspires.ftc.teamcode.commands.ColourChooser.isRed;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.blueLocalisationPoint;
 import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redLocalisationPoint;
 
 @TeleOp
@@ -32,17 +35,18 @@ public class RedTeleOp extends OpMode {
     private PollenHood pollenHood;
     private NectarHood nectarHood;
     private Shooter shooter;
-    private Shoot shoot;
-    private IntakeTransfer intakeTransfer;
+    private Transfer transfer;
+    private Intake intake;
     private ShooterBlocker shooterBlocker;
     private ShooterLookupTables shooterLookupTables;
-
-
     private AimingTargetMath aimingTargetMath;
 
 
     @Override
     public void init() {
+
+        isRed = true;
+
         follower = Constants.create(hardwareMap);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -57,12 +61,11 @@ public class RedTeleOp extends OpMode {
         pollenHood = new PollenHood(hardwareMap);
         nectarHood = new NectarHood(hardwareMap);
 
-        intakeTransfer = new IntakeTransfer(hardwareMap);
+        transfer = new Transfer(hardwareMap);
+        intake = new Intake(hardwareMap);
         shooterBlocker = new ShooterBlocker(hardwareMap);
-        shoot = new Shoot(intakeTransfer, shooterBlocker);
 
         shooterLookupTables = new ShooterLookupTables();
-
 
     }
 
@@ -77,12 +80,17 @@ public class RedTeleOp extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad1.circleWasPressed()) {
-            GoToPoint.goToRedShootingPosition();
+        if (gamepad1.leftBumperWasReleased()) {
+            intake.outtake();
+            transfer.outtake();
         }
 
         if (gamepad1.dpad_left) {
-            Localise.setPoint(redLocalisationPoint);
+            if (isRed) {
+                Localise.setPoint(redLocalisationPoint);
+            }
+            else
+                Localise.setPoint(blueLocalisationPoint);
         }
 
         if (gamepad1.squareWasPressed()) {
@@ -90,15 +98,18 @@ public class RedTeleOp extends OpMode {
         }
 
         if (gamepad1.right_trigger_pressed) {
-            shoot.shoot();
+            intake.run();
+            transfer.run();
+            shooterBlocker.open();
         }
-        else
-            shoot.noShoot();
+        else {
+            shooterBlocker.close();
+        }
 
         if (gamepad1.left_trigger_pressed) {
-            intakeTransfer.run();
+            intake.run();
+            transfer.run();
         }
-        else intakeTransfer.stop();
 
 
         // ==================
@@ -106,7 +117,7 @@ public class RedTeleOp extends OpMode {
         // ==================
 
         double forward = -gamepad1.left_stick_y;
-        double strafe = gamepad1.left_stick_x;
+        double strafe = -gamepad1.left_stick_x;
         double turn;
 
         if (aiming.isActive()) {
@@ -140,7 +151,6 @@ public class RedTeleOp extends OpMode {
         nectarHood.setAngle(nectarTargetHood);
 
 
-
         // ===================
         //  Telemetry Values
         // ===================
@@ -156,20 +166,26 @@ public class RedTeleOp extends OpMode {
 
         telemetry.addData("Measured Shooter RPM", "%.0f", shooter.getCurrentRPM());
         telemetry.addData("Shooter RPM Error", "%+.0f", shooter.getRPMError());
-        telemetry.addData(  "Shooter Motor Power", "%.3f", shooter.getOutputPower());
+        telemetry.addData("Shooter Motor Power", "%.3f", shooter.getOutputPower());
         telemetry.addData("Shooter Ready", shooter.isReady());
 
         telemetry.addData("Pollen Target Hood", pollenTargetHood);
         telemetry.addData("Nectar Target Hood", nectarTargetHood);
+
         telemetry.update();
 
     }
 
+
     @Override
     public void stop() {
 
-        if (intakeTransfer != null) {
-            intakeTransfer.stop();
+        if (intake != null) {
+            intake.stop();
+        }
+
+        if (transfer != null) {
+            transfer.stop();
         }
 
         if (shooter != null) {

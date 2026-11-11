@@ -22,14 +22,13 @@ import static com.pedropathing.ivy.commands.Commands.waitUntil;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
-import org.firstinspires.ftc.teamcode.commands.Shoot;
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.subsystems.HiveVision;
 import org.firstinspires.ftc.teamcode.subsystems.DetectHiveSide;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
-import org.firstinspires.ftc.teamcode.subsystems.IntakeTransfer;
+import org.firstinspires.ftc.teamcode.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
@@ -43,7 +42,7 @@ public class Prefire extends OpMode {
     private ShooterLookupTables shooterLookupTables;
 
     private Shooter shooter;
-    private IntakeTransfer intake;
+    private Transfer intake;
     private ShooterBlocker shooterBlocker;
     private Shoot shoot;
     private boolean shooterEnabled = true;
@@ -186,7 +185,7 @@ public class Prefire extends OpMode {
         shooterLookupTables = new ShooterLookupTables();
 
         shooter = new Shooter(hardwareMap);
-        intake = new IntakeTransfer(hardwareMap);
+        intake = new Transfer(hardwareMap);
         shooterBlocker = new ShooterBlocker(hardwareMap);
 
         shoot = new Shoot(
