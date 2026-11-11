@@ -68,29 +68,8 @@ public class ShooterPractice extends OpMode {
         telemetry.addData("Measured RPM", "%.0f", shooter.getCurrentRPM());
         telemetry.addData("RPM Error", "%+.0f", shooter.getRPMError());
 
-        telemetry.addData(
-                "Motor Power",
-                "%.3f",
-                shooter.getOutputPower()
-        );
 
-        telemetry.addData("Shooter Ready", shooter.isReady());
-        telemetry.addData(
-                "Battery Voltage",
-                "%.2f",
-                shooter.getBatteryVoltage()
-        );
 
-        telemetry.addData(
-                "Encoder Position",
-                shooter.getEncoderPosition()
-        );
-
-        telemetry.addData(
-                "Encoder Velocity (ticks/sec)",
-                "%.1f",
-                shooter.getEncoderVelocityTicksPerSecond()
-        );
 
         telemetry.addData("Hood 1 Position", hoodAngle1);
         telemetry.addData("Hood 2 Position", hoodAngle2);

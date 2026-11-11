@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.commands.ColourChooser;
-import org.firstinspires.ftc.teamcode.commands.GoToPoint;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.commands.Localise;
@@ -51,7 +50,6 @@ public class RedTeleOp extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Localise.init(follower);
-        GoToPoint.init(follower);
 
         aiming = new Aiming(follower);
 
