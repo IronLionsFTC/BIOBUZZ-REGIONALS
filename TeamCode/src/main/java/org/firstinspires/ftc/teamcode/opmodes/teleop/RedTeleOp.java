@@ -166,8 +166,7 @@ public class RedTeleOp extends OpMode {
 
         telemetry.addData("Measured Shooter RPM", "%.0f", shooter.getCurrentRPM());
         telemetry.addData("Shooter RPM Error", "%+.0f", shooter.getRPMError());
-        telemetry.addData("Shooter Motor Power", "%.3f", shooter.getOutputPower());
-        telemetry.addData("Shooter Ready", shooter.isReady());
+
 
         telemetry.addData("Pollen Target Hood", pollenTargetHood);
         telemetry.addData("Nectar Target Hood", nectarTargetHood);
