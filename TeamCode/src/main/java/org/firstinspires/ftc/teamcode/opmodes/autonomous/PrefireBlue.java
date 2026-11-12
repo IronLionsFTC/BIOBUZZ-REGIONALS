@@ -11,6 +11,7 @@ import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import static com.pedropathing.api.Paths.curve;
 import static com.pedropathing.api.Paths.line;
@@ -41,6 +42,8 @@ public class PrefireBlue extends OpMode {
     private Intake intake;
     private Transfer transfer;
     private ShooterBlocker shooterBlocker;
+    ElapsedTime shootTimer = new ElapsedTime();
+
     private static final PoseFactory poseFactory = PoseFactory.degrees();
 
 
@@ -50,18 +53,31 @@ public class PrefireBlue extends OpMode {
 
 
 
+
+
+
+
     Command shoot = Command.build()
             .setStart(() -> {
+                shootTimer.reset();
                 shooterBlocker.open();
             })
             .setExecute(() -> {
                 intake.run();
                 transfer.run();
-            });
+            })
+            .setDone(() -> shootTimer.seconds() >= 1.0)
+            .setEnd(endCondition -> {
+                intake.stop();
+                transfer.stop();
+                shooterBlocker.close();
+            })
+            .requiring(intake, transfer, shooterBlocker);
+
 
     private Command mainAuto(Follower follower) {
         return sequential(
-                waitMs(750),
+                waitMs(1750),
                 deadline(
                         waitMs(1000),
                         shoot

@@ -78,7 +78,7 @@ public class RedTeleOp extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad1.leftBumperWasReleased()) {
+        if (gamepad1.leftBumperWasPressed()) {
             intake.outtake();
             transfer.outtake();
         }
@@ -102,14 +102,18 @@ public class RedTeleOp extends OpMode {
         }
         else {
             shooterBlocker.close();
+            intake.stop();
+            transfer.stop();
         }
 
         if (gamepad1.left_trigger_pressed) {
             intake.run();
             transfer.run();
         }
-
-
+        else {
+            transfer.stop();
+            intake.stop();
+        }
         // ==================
         //   Actual Driving
         // ==================

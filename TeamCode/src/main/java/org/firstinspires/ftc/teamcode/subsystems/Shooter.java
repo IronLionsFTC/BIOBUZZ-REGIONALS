@@ -17,9 +17,9 @@ public class Shooter {
     public static double NO_LOAD_RPM = 5800.0;
 
     // KF adjusts for permanent dips or too high, it basically increases motor power
-    public static double kF = 1.0;
+    public static double kF = 1.1;
     // KP will logarithmically increase motor power (E.G. 1000 RPM difference = 0.2 motor power)
-    public static double kP = 0.00020;
+    public static double kP = 0.00100;
 
     private double targetRPM;
     private double currentRPM;
