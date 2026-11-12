@@ -45,4 +45,12 @@ public class ShooterConstants {
     public static double TRANSFER_DEFAULT_POWER = 0.6;
 
 
+    // ==========================
+    //  Flower Mech Up and Down
+    // ==========================
+
+    public static double FLOWER_UP = 0;
+    public static double FLOWER_DOWN = 1.0;
+
+
 }

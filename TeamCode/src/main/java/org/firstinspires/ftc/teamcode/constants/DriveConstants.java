@@ -9,9 +9,9 @@ public class DriveConstants {
     //   Both bucket points
     // =======================
 
-    public static double RED_NORTH_TARGET_X = 57.7;
-    public static double RED_NORTH_TARGET_Y = 90.2;
-    public static double RED_SOUTH_TARGET_X = 57.7;
+    public static double RED_NORTH_TARGET_X = 53;
+    public static double RED_NORTH_TARGET_Y = 90;
+    public static double RED_SOUTH_TARGET_X = 53;
     public static double RED_SOUTH_TARGET_Y = 51.1;
     public static double MIDDLE_POINT_Y = 66.5;
     public static double BLUE_NORTH_TARGET_X = 84.5;
