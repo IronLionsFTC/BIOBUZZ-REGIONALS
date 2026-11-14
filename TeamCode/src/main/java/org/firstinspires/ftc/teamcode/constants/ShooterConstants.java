@@ -49,8 +49,8 @@ public class ShooterConstants {
     //  Flower Mech Up and Down
     // ==========================
 
-    public static double FLOWER_UP = 0;
-    public static double FLOWER_DOWN = 1.0;
+    public static double FLOWER_UP = 0.8;
+    public static double FLOWER_DOWN = 0.28;
 
 
 }

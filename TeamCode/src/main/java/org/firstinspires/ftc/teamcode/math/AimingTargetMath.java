@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.math;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 
-import org.firstinspires.ftc.teamcode.commands.ColourChooser;
-
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.MIDDLE_POINT_Y;
 
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_NORTH_TARGET_X;
@@ -12,10 +10,6 @@ import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_NORTH_
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_SOUTH_TARGET_X;
 import static org.firstinspires.ftc.teamcode.constants.DriveConstants.RED_SOUTH_TARGET_Y;
 
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.BLUE_NORTH_TARGET_X;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.BLUE_NORTH_TARGET_Y;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.BLUE_SOUTH_TARGET_X;
-import static org.firstinspires.ftc.teamcode.constants.DriveConstants.BLUE_SOUTH_TARGET_Y;
 
 
 public class AimingTargetMath {
@@ -44,23 +38,12 @@ public class AimingTargetMath {
 
         if (robotPose.y() >= MIDDLE_POINT_Y) {
 
-            if (ColourChooser.isRed) {
                 targetX = RED_NORTH_TARGET_X;
                 targetY = RED_NORTH_TARGET_Y;
-            } else {
-                targetX = BLUE_NORTH_TARGET_X;
-                targetY = BLUE_NORTH_TARGET_Y;
-            }
-
         } else {
-
-            if (ColourChooser.isRed) {
                 targetX = RED_SOUTH_TARGET_X;
                 targetY = RED_SOUTH_TARGET_Y;
-            } else {
-                targetX = BLUE_SOUTH_TARGET_X;
-                targetY = BLUE_SOUTH_TARGET_Y;
-            }
+
         }
     }
 

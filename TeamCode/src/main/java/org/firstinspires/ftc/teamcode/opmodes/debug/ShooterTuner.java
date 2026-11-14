@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.debug;
 
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.localisationPoint;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -8,11 +10,9 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.commands.ColourChooser;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.commands.Localise;
-import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 import org.firstinspires.ftc.teamcode.subsystems.Aiming;
@@ -22,9 +22,6 @@ import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
-import static org.firstinspires.ftc.teamcode.commands.ColourChooser.isRed;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.blueLocalisationPoint;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redLocalisationPoint;
 
 @Config
 @TeleOp
@@ -47,7 +44,6 @@ public class ShooterTuner extends OpMode {
     @Override
     public void init() {
 
-        isRed = true;
 
         follower = Constants.create(hardwareMap);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -88,12 +84,9 @@ public class ShooterTuner extends OpMode {
         }
 
         if (gamepad1.dpad_left) {
-            if (isRed) {
-                Localise.setPoint(redLocalisationPoint);
+                Localise.setPoint(localisationPoint);
             }
-            else
-                Localise.setPoint(blueLocalisationPoint);
-        }
+
 
 
         if (gamepad1.squareWasPressed()) {

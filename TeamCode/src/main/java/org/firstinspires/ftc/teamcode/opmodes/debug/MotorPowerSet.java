@@ -27,6 +27,7 @@ public class MotorPowerSet extends OpMode {
     private Servo shooterBlocker1;
     private Servo shooterBlocker2;
     private Servo nectarHood;
+    private Servo flowerServo;
 
     public static double shooterPower = 0.0;
     public static double shooterBlockerPosition = 0.0;
@@ -34,6 +35,7 @@ public class MotorPowerSet extends OpMode {
     public static double transferPower = 0.0;
     public static double hoodAngle1 = 0.0;
     public static double hoodAngle2 = 0.0;
+    public static double flowerPosition = 0.0;
 
 
 
@@ -48,6 +50,7 @@ public class MotorPowerSet extends OpMode {
         shooterBlocker2 = hardwareMap.get(Servo.class, "shooterBlocker2");
         nectarHood = hardwareMap.get(Servo.class, "pollenHood");
         pollenHood = hardwareMap.get(Servo.class, "nectarHood");
+        flowerServo = hardwareMap.get(Servo.class, "flowerServo");
 
         shooterMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterMotor2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -75,6 +78,8 @@ public class MotorPowerSet extends OpMode {
 
         shooterBlocker1.setPosition(shooterBlockerPosition);
         shooterBlocker2.setPosition(shooterBlockerPosition);
+
+        flowerServo.setPosition(flowerPosition);
 
         telemetry.update();
     }

@@ -20,7 +20,7 @@ public class Intake {
     }
 
     public void outtake() {
-        intake.setPower(INTAKE_DEFAULT_POWER);
+        intake.setPower(-1);
     }
 
     public void stop() {

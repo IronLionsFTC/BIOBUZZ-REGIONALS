@@ -21,10 +21,12 @@ public final class AutonomousPoses {
     // ================= //
 
 
-    public static final Pose redLocalisationPoint =
+    public static final Pose localisationPoint =
             poseFactory.of(7.7, 9.1, 270);
-    public static final Pose blueLocalisationPoint =
-            poseFactory.of(134.2, 132.5, 90);
+
+
+    public static final Pose shootingLocalisationPoint =
+            poseFactory.of(58.1, 132.1, 90);
 
 
 

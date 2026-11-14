@@ -20,7 +20,7 @@ public class Transfer {
     }
 
     public void outtake() {
-        transfer.setPower(-TRANSFER_DEFAULT_POWER);
+        transfer.setPower(-1);
     }
 
     public void stop() {

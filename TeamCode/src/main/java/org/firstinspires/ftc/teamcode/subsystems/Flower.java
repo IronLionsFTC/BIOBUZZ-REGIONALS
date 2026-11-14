@@ -21,7 +21,7 @@ public class Flower {
         flowerServo.setPosition(FLOWER_UP);
     }
 
-    public void open() {
+    public void down() {
         flowerServo.setPosition(FLOWER_DOWN);
     }
 

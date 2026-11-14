@@ -9,6 +9,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
+import com.pedropathing.paths.Path;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,10 +20,13 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.deadline;
 import static com.pedropathing.ivy.groups.Groups.sequential;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import static com.pedropathing.paths.interpolator.Interpolator.linear;
 
 import org.firstinspires.ftc.teamcode.math.AimingTargetMath;
 import org.firstinspires.ftc.teamcode.math.ShooterLookupTables;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.subsystems.Flower;
 import org.firstinspires.ftc.teamcode.subsystems.FollowerStorage;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
@@ -31,7 +35,7 @@ import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
 @Autonomous
-public class PrefireRed extends OpMode {
+public class Normal2Tip extends OpMode {
 
     // DEFINING //////////////////////////////////////////////////////////////////////////////////
     private Follower follower;
@@ -41,18 +45,92 @@ public class PrefireRed extends OpMode {
     private Shooter shooter;
     private Intake intake;
     private Transfer transfer;
+    private Flower flower;
     ElapsedTime shootTimer = new ElapsedTime();
+    ElapsedTime flowerTimer = new ElapsedTime();
     private ShooterBlocker shooterBlocker;
     private static final PoseFactory poseFactory = PoseFactory.degrees();
 
 
     // POSES ///////////////////////////////////////////////////////////////////////////////////
-    private static final Pose redAutoStart = poseFactory.of(54.2, 9.2, 270);
+    private static final Pose autoStart = poseFactory.of(54.2, 9.2, 270);
+    private static final Pose controlPoint = poseFactory.of(66.88, 21.11, 240);
+    private static final Pose ballSpike = poseFactory.of(11.24, 6, 180);
+    private static final Pose underGoal = poseFactory.of(55.47, 38.96, 90);
+    private static final Pose shootSpikeBalls = poseFactory.of(58.38, 122.12, 90);
+    private static final Pose flowerIntake = poseFactory.of(47.22, 123, 110);
+    private static final Pose park = poseFactory.of(14.15, 123.59, 0);
 
 
 
+    // PATHS //////////////////////////////////////////////////////////////////////////////////
+    private static Path intakeSpikeBalls() {
+      return curve(autoStart, controlPoint, ballSpike)
+               .linear(autoStart, ballSpike)
+                .with(
+                Constants.foresightConfig.maxPathSpeed.at(0.6)
+        );}
 
-    Command shoot = Command.build()
+
+    private static Path goUnderGoal() {
+        return line(ballSpike, underGoal)
+                .linear(ballSpike,underGoal);
+    }
+
+    private static Path southShootingSpot() {
+        return line(underGoal, shootSpikeBalls)
+                .linear(underGoal, shootSpikeBalls);
+    }
+
+    private static Path intakeFlower() {
+        return line(shootSpikeBalls, flowerIntake)
+                .linear(shootSpikeBalls, flowerIntake)
+                .with(
+                        Constants.foresightConfig.maxPathSpeed.at(0.5)
+                );
+    }
+
+    private static Path goToPark() {
+        return line(flowerIntake, park)
+                .linear(flowerIntake, park);
+    }
+
+    Command flowerDown = Command.build()
+            .setStart(() -> {
+                flowerTimer.reset();
+            })
+            .setExecute(() -> {
+                flower.down();
+            })
+            .setDone(() -> flowerTimer.seconds() >= 1.5);
+
+    Command flowerUp = Command.build()
+            .setStart(() -> {
+                flowerTimer.reset();
+            })
+            .setExecute(() -> {
+                        flower.up();
+                    })
+            .setDone(() -> flowerTimer.seconds() >= 1.5)
+            .setEnd(endCondition -> {
+                flower.up();
+            });
+
+
+
+    Command intakeBalls = Command.build()
+            .setExecute(() -> {
+                intake.run();
+                transfer.run();
+                    })
+            .setEnd(endCondition -> {
+                intake.stop();
+                transfer.stop();
+            });
+
+
+
+    Command shootBalls = Command.build()
             .setStart(() -> {
                 shootTimer.reset();
                 shooterBlocker.open();
@@ -62,7 +140,7 @@ public class PrefireRed extends OpMode {
                 transfer.run();
                 shooterBlocker.open();
             })
-            .setDone(() -> shootTimer.seconds() >= 1.0)
+            .setDone(() -> shootTimer.seconds() >= 1.5)
             .setEnd(endCondition -> {
                 intake.stop();
                 transfer.stop();
@@ -72,10 +150,23 @@ public class PrefireRed extends OpMode {
 
     private Command mainAuto(Follower follower) {
         return sequential(
-                waitMs(1750),
-                shoot
+                waitMs(1000),
+                shootBalls,
+                deadline(
+                        follow(follower, intakeSpikeBalls()),
+                        intakeBalls
+                ),
+                follow(follower, goUnderGoal()),
+                follow(follower, southShootingSpot()),
+                shootBalls,
+                flowerDown,
+                follow(follower, intakeFlower()),
+                shootBalls,
+                shootBalls,
+                deadline(
+                        follow(follower, goToPark()),
+                        flowerUp)
                 );
-
     }
 
 
@@ -91,6 +182,7 @@ public class PrefireRed extends OpMode {
         shooterLookupTables = new ShooterLookupTables();
 
         shooter = new Shooter(hardwareMap);
+        flower = new Flower(hardwareMap);
         transfer = new Transfer(hardwareMap);
         intake = new Intake(hardwareMap);
         shooterBlocker = new ShooterBlocker(hardwareMap);
@@ -104,7 +196,7 @@ public class PrefireRed extends OpMode {
         shooterBlocker.close();
 
 
-        follower.setPose(redAutoStart);
+        follower.setPose(autoStart);
         follower.update();
     }
 
@@ -122,7 +214,7 @@ public class PrefireRed extends OpMode {
         double shootingDistance = aimingTargetMath.getDistanceToTarget();
 
         double targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
-        shooter.setTargetRPM(targetRPM);
+        shooter.setTargetRPM(targetRPM-50);
         shooter.update();
 
 

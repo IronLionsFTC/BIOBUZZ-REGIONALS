@@ -5,9 +5,8 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.commands.ColourChooser;
+import org.firstinspires.ftc.teamcode.subsystems.Flower;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Transfer;
 import org.firstinspires.ftc.teamcode.commands.Localise;
@@ -21,12 +20,11 @@ import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
 
-import static org.firstinspires.ftc.teamcode.commands.ColourChooser.isRed;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.blueLocalisationPoint;
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.redLocalisationPoint;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.localisationPoint;
+import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.shootingLocalisationPoint;
 
-@TeleOp
-public class RedTeleOp extends OpMode {
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp
+public class TeleOp extends OpMode {
 
 
     private Follower follower;
@@ -36,15 +34,20 @@ public class RedTeleOp extends OpMode {
     private Shooter shooter;
     private Transfer transfer;
     private Intake intake;
+    private Flower flower;
+
+    private double targetRPM = 0;
+    private double nectarTargetHood;
+    private double pollenTargetHood;
     private ShooterBlocker shooterBlocker;
     private ShooterLookupTables shooterLookupTables;
     private AimingTargetMath aimingTargetMath;
+    private boolean manualMode = false;
 
 
     @Override
     public void init() {
 
-        isRed = true;
 
         follower = Constants.create(hardwareMap);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -58,6 +61,7 @@ public class RedTeleOp extends OpMode {
         shooter = new Shooter(hardwareMap);
         pollenHood = new PollenHood(hardwareMap);
         nectarHood = new NectarHood(hardwareMap);
+        flower= new Flower(hardwareMap);
 
         transfer = new Transfer(hardwareMap);
         intake = new Intake(hardwareMap);
@@ -78,42 +82,47 @@ public class RedTeleOp extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad1.leftBumperWasPressed()) {
+        if (gamepad1.left_bumper) {
             intake.outtake();
-            transfer.outtake();
-        }
+            transfer.outtake();}
 
         if (gamepad1.dpad_left) {
-            if (isRed) {
-                Localise.setPoint(redLocalisationPoint);
-            }
-            else
-                Localise.setPoint(blueLocalisationPoint);
-        }
+            Localise.setPoint(localisationPoint);}
+
+        if (gamepad1.dpad_right) {
+                Localise.setPoint(shootingLocalisationPoint);}
 
         if (gamepad1.squareWasPressed()) {
-            aiming.toggle();
-        }
+            aiming.toggle();}
 
         if (gamepad1.right_trigger_pressed) {
             intake.run();
             transfer.run();
-            shooterBlocker.open();
-        }
+            shooterBlocker.open();}
+
         else {
             shooterBlocker.close();
             intake.stop();
-            transfer.stop();
-        }
+            transfer.stop();}
 
         if (gamepad1.left_trigger_pressed) {
             intake.run();
-            transfer.run();
-        }
+            transfer.run();}
+
         else {
             transfer.stop();
-            intake.stop();
+            intake.stop();}
+
+        if (gamepad1.right_bumper) {
+            flower.down();}
+
+        else{
+            flower.up();}
+
+        if (gamepad1.xWasPressed()) {
+            manualMode = !manualMode;
         }
+        
         // ==================
         //   Actual Driving
         // ==================
@@ -141,10 +150,21 @@ public class RedTeleOp extends OpMode {
 
         double shootingDistance = aimingTargetMath.getDistanceToTarget();
 
-        double targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
+        if (!manualMode) {
+            targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
+        }
+        else {
+            targetRPM = 3100;
+        }
 
-        double nectarTargetHood = shooterLookupTables.getNectarHood(shootingDistance);
-        double pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
+        if (!manualMode) {
+            nectarTargetHood = shooterLookupTables.getNectarHood(shootingDistance);
+            pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
+        }
+        else {
+            nectarTargetHood = 16;
+            pollenTargetHood = 16;
+        }
 
         shooter.setTargetRPM(targetRPM);
         shooter.update();
