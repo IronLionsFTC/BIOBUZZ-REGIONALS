@@ -12,7 +12,7 @@ public class DriveConstants {
     public static double RED_NORTH_TARGET_X = 58;
     public static double RED_NORTH_TARGET_Y = 90;
     public static double RED_SOUTH_TARGET_X = 58;
-    public static double RED_SOUTH_TARGET_Y = 51.1;
+    public static double RED_SOUTH_TARGET_Y = 52;
     public static double MIDDLE_POINT_Y = 66.5;
 
 
