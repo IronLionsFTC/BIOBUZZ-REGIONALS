@@ -20,11 +20,15 @@ public class Intake {
     }
 
     public void outtake() {
-        intake.setPower(-1);
+        intake.setPower(1);
     }
 
     public void stop() {
         intake.setPower(0);
+    }
+
+    public void auto() {
+        intake.setPower(-0.4);
     }
 
     public void setPower(double power) {

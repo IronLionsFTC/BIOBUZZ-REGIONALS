@@ -27,6 +27,10 @@ public class Transfer {
         transfer.setPower(0);
     }
 
+    public void auto() {
+        transfer.setPower(0.4);
+    }
+
     public void setPower(double power) {
         transfer.setPower(power);
     }

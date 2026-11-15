@@ -42,7 +42,6 @@ public class TeleOp extends OpMode {
     private ShooterBlocker shooterBlocker;
     private ShooterLookupTables shooterLookupTables;
     private AimingTargetMath aimingTargetMath;
-    private boolean manualMode = false;
 
 
     @Override
@@ -119,10 +118,7 @@ public class TeleOp extends OpMode {
         else{
             flower.up();}
 
-        if (gamepad1.xWasPressed()) {
-            manualMode = !manualMode;
-        }
-        
+
         // ==================
         //   Actual Driving
         // ==================
@@ -150,21 +146,11 @@ public class TeleOp extends OpMode {
 
         double shootingDistance = aimingTargetMath.getDistanceToTarget();
 
-        if (!manualMode) {
-            targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
-        }
-        else {
-            targetRPM = 3100;
-        }
+        targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
 
-        if (!manualMode) {
-            nectarTargetHood = shooterLookupTables.getNectarHood(shootingDistance);
-            pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
-        }
-        else {
-            nectarTargetHood = 16;
-            pollenTargetHood = 16;
-        }
+        nectarTargetHood = shooterLookupTables.getNectarHood(shootingDistance);
+        pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
+
 
         shooter.setTargetRPM(targetRPM);
         shooter.update();

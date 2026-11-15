@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes.debug;
 
-import static org.firstinspires.ftc.teamcode.constants.AutonomousPoses.localisationPoint;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -21,6 +19,7 @@ import org.firstinspires.ftc.teamcode.subsystems.NectarHood;
 import org.firstinspires.ftc.teamcode.subsystems.PollenHood;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.ShooterBlocker;
+
 
 
 @Config
@@ -82,10 +81,6 @@ public class ShooterTuner extends OpMode {
             intake.outtake();
             transfer.outtake();
         }
-
-        if (gamepad1.dpad_left) {
-                Localise.setPoint(localisationPoint);
-            }
 
 
 

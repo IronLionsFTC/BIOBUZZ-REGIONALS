@@ -55,7 +55,8 @@ public class Lucky2Tip extends OpMode {
     // POSES ///////////////////////////////////////////////////////////////////////////////////
     private static final Pose autoStart = poseFactory.of(54.2, 9.2, 270);
     private static final Pose controlPoint = poseFactory.of(66.88, 21.11, 240);
-    private static final Pose ballSpike = poseFactory.of(11.24, 6, 180);
+    private static final Pose ballSpike = poseFactory.of(8, 5.5, 180);
+    private static final Pose ballSpikeAgain = poseFactory.of(12, 5.5, 180);
     private static final Pose underGoal = poseFactory.of(55.47, 38.96, 90);
     private static final Pose shootSpikeBalls = poseFactory.of(58.38, 122.12, 90);
     private static final Pose flowerIntake = poseFactory.of(47.22, 123, 110);
@@ -71,8 +72,24 @@ public class Lucky2Tip extends OpMode {
         return curve(autoStart, controlPoint, ballSpike)
                 .linear(autoStart, ballSpike)
                 .with(
-                        Constants.foresightConfig.maxPathSpeed.at(0.6)
+                        Constants.foresightConfig.maxPathSpeed.at(0.4)
                 );}
+    private static Path goBackToIntake() {
+        return line(ballSpike, ballSpikeAgain)
+                .linear(ballSpike, ballSpikeAgain)
+                .with(
+                        Constants.foresightConfig.maxPathSpeed.at(0.7)
+                );
+    }
+
+    private static Path intakeSpikeBallsAgain() {
+        return line(ballSpikeAgain, ballSpike)
+                .linear(ballSpikeAgain, ballSpike)
+                .with(
+                        Constants.foresightConfig.maxPathSpeed.at(0.7)
+                );
+    }
+
 
 
     private static Path goUnderGoal() {
@@ -90,8 +107,7 @@ public class Lucky2Tip extends OpMode {
                 .linear(shootSpikeBalls, flowerIntake)
                 .with(
                         Constants.foresightConfig.maxPathSpeed.at(0.5)
-                );
-    }
+                );}
 
     private static Path goToPark() {
         return line(flowerIntake, park)
@@ -137,7 +153,7 @@ public class Lucky2Tip extends OpMode {
             .setExecute(() -> {
                 flower.up();
             })
-            .setDone(() -> flowerTimer.seconds() >= 1.5)
+            .setDone(() -> flowerTimer.seconds() >= 1)
             .setEnd(endCondition -> {
                 flower.up();
             });
@@ -146,8 +162,8 @@ public class Lucky2Tip extends OpMode {
 
     Command intakeBalls = Command.build()
             .setExecute(() -> {
-                intake.run();
-                transfer.run();
+                intake.auto();
+                transfer.auto();
             })
             .setEnd(endCondition -> {
                 intake.stop();
@@ -162,11 +178,11 @@ public class Lucky2Tip extends OpMode {
                 shooterBlocker.open();
             })
             .setExecute(() -> {
-                intake.run();
-                transfer.run();
+                intake.auto();
+                transfer.auto();
                 shooterBlocker.open();
             })
-            .setDone(() -> shootTimer.seconds() >= 1.5)
+            .setDone(() -> shootTimer.seconds() >= 2.0)
             .setEnd(endCondition -> {
                 intake.stop();
                 transfer.stop();
@@ -176,17 +192,24 @@ public class Lucky2Tip extends OpMode {
 
     private Command mainAuto(Follower follower) {
         return sequential(
-                waitMs(1000),
+                waitMs(500),
                 shootBalls,
                 deadline(
                         follow(follower, intakeSpikeBalls()),
-                        intakeBalls
-                ),
+                        intakeBalls),
+                deadline(
+                        follow(follower,goBackToIntake()),
+                        intakeBalls),
+                deadline(
+                        follow(follower, intakeSpikeBallsAgain()),
+                        intakeBalls),
                 follow(follower, goUnderGoal()),
                 follow(follower, southShootingSpot()),
+                waitMs(400),
                 shootBalls,
                 flowerDown,
                 follow(follower, intakeFlower()),
+                waitMs(400),
                 shootBalls,
                 shootBalls,
                 deadline(
