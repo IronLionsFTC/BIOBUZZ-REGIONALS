@@ -1,5 +1,3 @@
-/// NO COCURRENT THINGS IN HERE RN
-
 package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import com.acmerobotics.dashboard.FtcDashboard;

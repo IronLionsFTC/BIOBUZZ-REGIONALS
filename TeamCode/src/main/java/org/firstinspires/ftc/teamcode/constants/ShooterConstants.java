@@ -6,15 +6,6 @@ import com.acmerobotics.dashboard.config.Config;
 public class ShooterConstants {
 
     // ===================
-    // Shooter PID
-    // ===================
-
-    public static double SHOOTER_KP = 0.002;
-    public static double SHOOTER_KD = 0.0;
-    public static double SHOOTER_KI = 0.0;
-    public static double TIME_TO_SHOOT = 1.5;
-
-    // ===================
     // Pollen Hood Items
     // ===================
     public static final double MIN_HOOD_ANGLE = 0.0;
@@ -49,8 +40,8 @@ public class ShooterConstants {
     //  Flower Mech Up and Down
     // ==========================
 
-    public static double FLOWER_UP = 0.8;
-    public static double FLOWER_DOWN = 0.28;
+    public static double FLOWER_UP = 0;
+    public static double FLOWER_DOWN = 0.32;
 
 
 }
