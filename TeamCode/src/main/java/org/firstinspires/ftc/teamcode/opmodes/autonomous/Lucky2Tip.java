@@ -58,10 +58,11 @@ public class Lucky2Tip extends OpMode {
     private static final Pose ballSpikeAgain = poseFactory.of(7.38, 10, 270);
     private static final Pose underGoal = poseFactory.of(55.47, 38.96, 90);
     private static final Pose shootSpikeBalls = poseFactory.of(57.73, 122.12, 90);
-    private static final Pose goBackForFlower = poseFactory.of(53.07, 118.65, 110);
-    private static final Pose flowerIntake = poseFactory.of(47, 126, 110);
-    private static final Pose controlPoint2 = poseFactory.of(17.85, 86.89, 180 );
-    private static final Pose goToSpikeAgain = poseFactory.of(17.64, 25.22, 270);
+    private static final Pose goBackForFlower = poseFactory.of(53.07, 118.65, 90);
+    private static final Pose flowerIntake = poseFactory.of(48.77, 127.87, 90);
+    private static final Pose controlPoint2 = poseFactory.of(19.75, 96.3, 180 );
+    private static final Pose goToFlower2 = poseFactory.of(27.46, 62.36, 180);
+    private static final Pose intakeFlower2 = poseFactory.of(16.11, 46.23, 180);
     private static final Pose shootLastMinuteBalls = poseFactory.of(43.49, 122.29, 113);
     private static final Pose park = poseFactory.of(14.15, 123.59, 0);
 
@@ -114,22 +115,22 @@ public class Lucky2Tip extends OpMode {
     }
 
 
-    private static Path goToSpikeIntake() {
-        return curve(flowerIntake, controlPoint2, goToSpikeAgain)
-                .linear(flowerIntake, goToSpikeAgain);
+    private static Path goToSecondFlower() {
+        return curve(flowerIntake, controlPoint2, goToFlower2)
+                .linear(flowerIntake, goToFlower2
+                );
     }
 
-    private static Path intakeSpikeLucky() {
-        return line(goToSpikeAgain, ballSpike)
-                .linear(goToSpikeAgain, ballSpike)
-        .with(
-                Constants.foresightConfig.maxPathSpeed.at(0.8)
-        );
+    private static Path goToIntakeSecondFlower() {
+        return line(goToFlower2, intakeFlower2)
+                .linear(goToFlower2, intakeFlower2)
+                .with(  Constants.foresightConfig.maxPathSpeed.at(0.5));
     }
+
 
     private static Path lastMinuteShot() {
-        return line(ballSpike, shootLastMinuteBalls)
-                .linear(ballSpike, shootLastMinuteBalls);
+        return line(intakeFlower2, shootLastMinuteBalls)
+                .linear(intakeFlower2, shootLastMinuteBalls);
     }
 
     private static Path parkForReal() {
@@ -169,6 +170,21 @@ public class Lucky2Tip extends OpMode {
                 intake.stop();
                 transfer.stop();
             });
+
+    Command flowerIntakeCommand = Command.build()
+            .setStart(() -> {
+                flowerTimer.reset();
+            })
+            .setExecute(() -> {
+                intake.run();
+                transfer.run();
+            })
+            .setDone(() -> flowerTimer.seconds() >= 2.0)
+            .setEnd(endCondition -> {
+                intake.stop();
+                transfer.stop();
+            })
+            .requiring(intake, transfer);
 
 
 
@@ -213,14 +229,18 @@ public class Lucky2Tip extends OpMode {
                 waitMs(400),
                 shootBalls,
                 deadline(
-                        follow(follower, goToSpikeIntake()),
+                        follow(follower, goToSecondFlower()),
                         flowerUp),
+                flowerDown,
                 deadline(
-                        follow(follower, intakeSpikeLucky()),
+                        follow(follower, goToIntakeSecondFlower()),
                         intakeBalls),
-                follow(follower, lastMinuteShot()),
+                flowerIntakeCommand,
+                deadline(
+                        follow(follower, lastMinuteShot()),
+                        flowerUp),
                 shootBalls,
-                follow(follower, parkForReal())
+                    follow(follower, parkForReal())
         );
     }
 
