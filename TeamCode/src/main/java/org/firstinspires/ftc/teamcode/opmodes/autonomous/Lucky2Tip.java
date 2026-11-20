@@ -58,11 +58,11 @@ public class Lucky2Tip extends OpMode {
     private static final Pose ballSpikeAgain = poseFactory.of(7.38, 10, 270);
     private static final Pose underGoal = poseFactory.of(55.47, 38.96, 90);
     private static final Pose shootSpikeBalls = poseFactory.of(57.73, 122.12, 90);
-    private static final Pose goBackForFlower = poseFactory.of(53.07, 118.65, 90);
-    private static final Pose flowerIntake = poseFactory.of(48.77, 127.87, 90);
+    private static final Pose goBackForFlower = poseFactory.of(53.07, 115, 90);
+    private static final Pose flowerIntake = poseFactory.of(42.6, 125.3, 90);
     private static final Pose controlPoint2 = poseFactory.of(19.75, 96.3, 180 );
     private static final Pose goToFlower2 = poseFactory.of(27.46, 62.36, 180);
-    private static final Pose intakeFlower2 = poseFactory.of(16.11, 46.23, 180);
+    private static final Pose intakeFlower2 = poseFactory.of(17, 46.23, 180);
     private static final Pose shootLastMinuteBalls = poseFactory.of(43.49, 122.29, 113);
     private static final Pose park = poseFactory.of(14.15, 123.59, 0);
 
@@ -114,10 +114,15 @@ public class Lucky2Tip extends OpMode {
                 );
     }
 
+    private static Path shootFlowerBalls1() {
+        return line(flowerIntake, shootSpikeBalls)
+                .linear(flowerIntake, shootSpikeBalls);
+    }
+
 
     private static Path goToSecondFlower() {
-        return curve(flowerIntake, controlPoint2, goToFlower2)
-                .linear(flowerIntake, goToFlower2
+        return curve(shootSpikeBalls, controlPoint2, goToFlower2)
+                .linear(shootSpikeBalls, goToFlower2
                 );
     }
 
@@ -206,9 +211,11 @@ public class Lucky2Tip extends OpMode {
             })
             .requiring(intake, transfer, shooterBlocker);
 
+
+
     private Command mainAuto(Follower follower) {
         return sequential(
-                waitMs(750),
+                waitMs(1000),
                 shootBalls,
                 deadline(
                         follow(follower, intakeSpikeBalls()),
@@ -219,13 +226,19 @@ public class Lucky2Tip extends OpMode {
                 deadline(
                         follow(follower, intakeSpikeBallsAgain()),
                         intakeBalls),
-                follow(follower, goUnderGoal()),
+                parallel(follow(follower, goUnderGoal()),
+                        flowerUp),
                 follow(follower, southShootingSpot()),
                 shootBalls,
                 parallel(
                         follow(follower,goBackToFlower()),
                         flowerDown),
                 follow(follower, intakeFlower()),
+                flowerIntakeCommand,
+                deadline(
+                        follow(follower, shootFlowerBalls1()),
+                        flowerUp
+                ),
                 waitMs(400),
                 shootBalls,
                 deadline(

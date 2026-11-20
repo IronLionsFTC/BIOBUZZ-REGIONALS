@@ -17,6 +17,7 @@ import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.deadline;
+import static com.pedropathing.ivy.groups.Groups.parallel;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 import static com.pedropathing.paths.interpolator.Interpolator.linear;
@@ -52,23 +53,40 @@ public class Normal2Tip extends OpMode {
 
     // POSES ///////////////////////////////////////////////////////////////////////////////////
     private static final Pose autoStart = poseFactory.of(54.2, 9.2, 270);
-    private static final Pose controlPoint = poseFactory.of(66.88, 21.11, 240);
-    private static final Pose ballSpike = poseFactory.of(11.24, 6, 180);
+    private static final Pose controlPoint = poseFactory.of(25.57, 47.16, 270);
+    private static final Pose ballSpike = poseFactory.of(7.38, 8.4, 270);
+    private static final Pose ballSpikeAgain = poseFactory.of(7.38, 10, 270);
     private static final Pose underGoal = poseFactory.of(55.47, 38.96, 90);
-    private static final Pose shootSpikeBalls = poseFactory.of(58.38, 122.12, 90);
-    private static final Pose flowerIntake = poseFactory.of(47.22, 123, 110);
+    private static final Pose shootSpikeBalls = poseFactory.of(57.73, 122.12, 90);
+    private static final Pose goBackForFlower = poseFactory.of(53.07, 115, 90);
+    private static final Pose flowerIntake = poseFactory.of(42.6, 125.3, 90);
+    private static final Pose controlPoint2 = poseFactory.of(19.75, 96.3, 180 );
+    private static final Pose goToFlower2 = poseFactory.of(27.46, 62.36, 180);
+    private static final Pose intakeFlower2 = poseFactory.of(17, 46.23, 180);
+    private static final Pose shootLastMinuteBalls = poseFactory.of(43.49, 122.29, 113);
     private static final Pose park = poseFactory.of(14.15, 123.59, 0);
 
 
 
     // PATHS //////////////////////////////////////////////////////////////////////////////////
     private static Path intakeSpikeBalls() {
-      return curve(autoStart, controlPoint, ballSpike)
-               .linear(autoStart, ballSpike)
+        return curve(autoStart, controlPoint, ballSpike)
+                .linear(autoStart, ballSpike)
                 .with(
-                Constants.foresightConfig.maxPathSpeed.at(0.6)
-        );}
+                        Constants.foresightConfig.maxPathSpeed.at(0.7)
+                );}
+    private static Path goBackToIntake() {
+        return line(ballSpike, ballSpikeAgain)
+                .linear(ballSpike, ballSpikeAgain);
+    }
 
+    private static Path intakeSpikeBallsAgain() {
+        return line(ballSpikeAgain, ballSpike)
+                .linear(ballSpikeAgain, ballSpike)
+                .with(
+                        Constants.foresightConfig.maxPathSpeed.at(0.7)
+                );
+    }
 
     private static Path goUnderGoal() {
         return line(ballSpike, underGoal)
@@ -80,17 +98,31 @@ public class Normal2Tip extends OpMode {
                 .linear(underGoal, shootSpikeBalls);
     }
 
-    private static Path intakeFlower() {
-        return line(shootSpikeBalls, flowerIntake)
-                .linear(shootSpikeBalls, flowerIntake)
+    private static Path goBackToFlower() {
+        return line(shootSpikeBalls, goBackForFlower)
+                .linear(shootSpikeBalls, goBackForFlower)
                 .with(
-                        Constants.foresightConfig.maxPathSpeed.at(0.5)
+                        Constants.foresightConfig.maxPathSpeed.at(0.8)
                 );
     }
 
-    private static Path goToPark() {
-        return line(flowerIntake, park)
-                .linear(flowerIntake, park);
+    private static Path intakeFlower() {
+        return line(goBackForFlower, flowerIntake)
+                .linear(goBackForFlower, flowerIntake)
+                .with(
+                        Constants.foresightConfig.maxPathSpeed.at(0.7)
+                );
+    }
+
+    private static Path shootFlowerBalls1() {
+        return line(flowerIntake, shootSpikeBalls)
+                .linear(flowerIntake, shootSpikeBalls);
+    }
+
+
+    private static Path parkForReal() {
+        return line(shootSpikeBalls, park)
+                .linear(shootSpikeBalls, park);
     }
 
     Command flowerDown = Command.build()
@@ -107,9 +139,9 @@ public class Normal2Tip extends OpMode {
                 flowerTimer.reset();
             })
             .setExecute(() -> {
-                        flower.up();
-                    })
-            .setDone(() -> flowerTimer.seconds() >= 1.5)
+                flower.up();
+            })
+            .setDone(() -> flowerTimer.seconds() >= 1)
             .setEnd(endCondition -> {
                 flower.up();
             });
@@ -120,11 +152,26 @@ public class Normal2Tip extends OpMode {
             .setExecute(() -> {
                 intake.run();
                 transfer.run();
-                    })
+            })
             .setEnd(endCondition -> {
                 intake.stop();
                 transfer.stop();
             });
+
+    Command flowerIntakeCommand = Command.build()
+            .setStart(() -> {
+                flowerTimer.reset();
+            })
+            .setExecute(() -> {
+                intake.run();
+                transfer.run();
+            })
+            .setDone(() -> flowerTimer.seconds() >= 2.0)
+            .setEnd(endCondition -> {
+                intake.stop();
+                transfer.stop();
+            })
+            .requiring(intake, transfer);
 
 
 
@@ -138,7 +185,7 @@ public class Normal2Tip extends OpMode {
                 transfer.run();
                 shooterBlocker.open();
             })
-            .setDone(() -> shootTimer.seconds() >= 1.5)
+            .setDone(() -> shootTimer.seconds() >= 2.0)
             .setEnd(endCondition -> {
                 intake.stop();
                 transfer.stop();
@@ -146,25 +193,38 @@ public class Normal2Tip extends OpMode {
             })
             .requiring(intake, transfer, shooterBlocker);
 
+
+
     private Command mainAuto(Follower follower) {
         return sequential(
                 waitMs(1000),
                 shootBalls,
                 deadline(
                         follow(follower, intakeSpikeBalls()),
-                        intakeBalls
-                ),
-                follow(follower, goUnderGoal()),
+                        intakeBalls),
+                deadline(
+                        follow(follower,goBackToIntake()),
+                        intakeBalls),
+                deadline(
+                        follow(follower, intakeSpikeBallsAgain()),
+                        intakeBalls),
+                parallel(follow(follower, goUnderGoal()),
+                        flowerUp),
                 follow(follower, southShootingSpot()),
                 shootBalls,
-                flowerDown,
+                parallel(
+                        follow(follower,goBackToFlower()),
+                        flowerDown),
                 follow(follower, intakeFlower()),
-                shootBalls,
-                shootBalls,
+                flowerIntakeCommand,
                 deadline(
-                        follow(follower, goToPark()),
-                        flowerUp)
-                );
+                        follow(follower, shootFlowerBalls1()),
+                        flowerUp
+                ),
+                waitMs(400),
+                shootBalls,
+                follow(follower, parkForReal())
+        );
     }
 
 
@@ -212,7 +272,7 @@ public class Normal2Tip extends OpMode {
         double shootingDistance = aimingTargetMath.getDistanceToTarget();
 
         double targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
-        shooter.setTargetRPM(targetRPM-50);
+        shooter.setTargetRPM(targetRPM);
         shooter.update();
 
 
