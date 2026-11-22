@@ -59,10 +59,10 @@ public class Lucky2Tip extends OpMode {
     private static final Pose underGoal = poseFactory.of(55.47, 38.96, 90);
     private static final Pose shootSpikeBalls = poseFactory.of(57.73, 122.12, 90);
     private static final Pose goBackForFlower = poseFactory.of(53.07, 115, 90);
-    private static final Pose flowerIntake = poseFactory.of(42.6, 125.3, 90);
+    private static final Pose flowerIntake = poseFactory.of(42.2, 124.8, 90);
     private static final Pose controlPoint2 = poseFactory.of(19.75, 96.3, 180 );
     private static final Pose goToFlower2 = poseFactory.of(27.46, 62.36, 180);
-    private static final Pose intakeFlower2 = poseFactory.of(17, 46.23, 180);
+    private static final Pose intakeFlower2 = poseFactory.of(15.1, 45, 180);
     private static final Pose shootLastMinuteBalls = poseFactory.of(43.49, 122.29, 113);
     private static final Pose park = poseFactory.of(14.15, 123.59, 0);
 
@@ -184,7 +184,7 @@ public class Lucky2Tip extends OpMode {
                 intake.run();
                 transfer.run();
             })
-            .setDone(() -> flowerTimer.seconds() >= 2.0)
+            .setDone(() -> flowerTimer.seconds() >= 1.4)
             .setEnd(endCondition -> {
                 intake.stop();
                 transfer.stop();
@@ -203,7 +203,7 @@ public class Lucky2Tip extends OpMode {
                 transfer.run();
                 shooterBlocker.open();
             })
-            .setDone(() -> shootTimer.seconds() >= 2.0)
+            .setDone(() -> shootTimer.seconds() >= 1.5)
             .setEnd(endCondition -> {
                 intake.stop();
                 transfer.stop();
@@ -239,7 +239,6 @@ public class Lucky2Tip extends OpMode {
                         follow(follower, shootFlowerBalls1()),
                         flowerUp
                 ),
-                waitMs(400),
                 shootBalls,
                 deadline(
                         follow(follower, goToSecondFlower()),

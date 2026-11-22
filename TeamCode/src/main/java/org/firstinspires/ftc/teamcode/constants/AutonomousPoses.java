@@ -16,10 +16,6 @@ public final class AutonomousPoses {
     }
 
 
-    // ================= //
-    //       POSES
-    // ================= //
-
 
     public static final Pose localisationPoint =
             poseFactory.of(7.7, 9.1, 270);

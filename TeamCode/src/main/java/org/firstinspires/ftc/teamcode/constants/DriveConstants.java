@@ -5,9 +5,8 @@ import com.acmerobotics.dashboard.config.Config;
 @Config
 public class DriveConstants {
 
-    // ======================
+
     //   Both bucket points
-    // =======================
 
     public static double RED_NORTH_TARGET_X = 58;
     public static double RED_NORTH_TARGET_Y = 90;
@@ -16,9 +15,7 @@ public class DriveConstants {
     public static double MIDDLE_POINT_Y = 66.5;
 
 
-    // =============================
     //   Speed tuning for auto aim
-    // =============================
 
     public static double KP_POWER = 0.5;
     public static double MAX_TURN_POWER = 0.7;

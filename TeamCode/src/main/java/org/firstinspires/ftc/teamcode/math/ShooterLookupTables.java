@@ -14,11 +14,7 @@ public class ShooterLookupTables {
 
     public ShooterLookupTables() {
 
-        // =======================
         // Pollen Look-Up Tables
-        // =======================
-
-
 
         shooterRPM.add(20, 2900);
         shooterRPM.add(30, 3000);
@@ -26,8 +22,6 @@ public class ShooterLookupTables {
         shooterRPM.add(50, 3200);
         shooterRPM.add(60, 3300);
         shooterRPM.createLUT();
-
-
 
 
         pollenHood.add(20, 0);
@@ -38,9 +32,8 @@ public class ShooterLookupTables {
         pollenHood.createLUT();
 
 
-        // =====================
         // Nectar Look-Up Tables
-        // ======================
+
         nectarHood.add(0, 0);
         nectarHood.add(20, 0);
         nectarHood.add(40, 0);
@@ -50,9 +43,7 @@ public class ShooterLookupTables {
     }
 
 
-    // ================================
     // Simple way to read the table
-    // ================================
 
     public double getShooterRPM(double distance) {return shooterRPM.get(distance);}
     public double getPollenHood(double distance) {return pollenHood.get(distance);}

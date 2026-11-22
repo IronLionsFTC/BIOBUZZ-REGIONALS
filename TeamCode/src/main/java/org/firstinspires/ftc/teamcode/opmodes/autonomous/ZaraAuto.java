@@ -59,7 +59,7 @@ public class ZaraAuto extends OpMode {
     private static final Pose underGoal = poseFactory.of(55.47, 38.96, 90);
     private static final Pose shootSpikeBalls = poseFactory.of(57.73, 122.12, 90);
     private static final Pose goBackForFlower = poseFactory.of(53.07, 115, 90);
-    private static final Pose flowerIntake = poseFactory.of(42.6, 125.3, 90);
+    private static final Pose flowerIntake = poseFactory.of(46, 125.3, 90);
     private static final Pose controlPoint2 = poseFactory.of(19.75, 96.3, 180 );
     private static final Pose goToFlower2 = poseFactory.of(27.46, 62.36, 180);
     private static final Pose intakeFlower2 = poseFactory.of(17, 46.23, 180);

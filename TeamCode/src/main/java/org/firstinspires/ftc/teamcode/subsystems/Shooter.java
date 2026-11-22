@@ -18,7 +18,6 @@ public class Shooter {
 
     // KF adjusts for permanent dips or too high, it basically increases motor power
     public static double kF = 1.1;
-    // KP will
     public static double kP = 0.001;
 
     private double targetRPM;
@@ -50,21 +49,16 @@ public class Shooter {
 
     public void update() {
 
-        // Measure flywheel RPM using motor2's encoder
         currentRPM = Math.abs(motor2.getVelocity())
                 * 60.0 / Math.max(1.0, TICKS_PER_REV);
 
-        // Calculate RPM error
         double error = targetRPM - currentRPM;
 
-        // Feedforward + Proportional correction
         double power = kF * (targetRPM / Math.max(1.0, NO_LOAD_RPM))
                 + kP * error;
 
-        // Limit motor power
         power = Range.clip(power, 0.0, 1.0);
 
-        // Apply power to both motors
         motor1.setPower(power);
         motor2.setPower(-power);
     }

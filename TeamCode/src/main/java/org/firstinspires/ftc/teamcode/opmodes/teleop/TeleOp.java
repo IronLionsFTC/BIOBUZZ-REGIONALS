@@ -81,126 +81,126 @@ public class TeleOp extends OpMode {
     @Override
     public void loop() {
 
-        if (gamepad1.left_bumper) {
-            intake.outtake();
-            transfer.outtake();}
 
         if (gamepad1.dpad_left) {
-            Localise.setPoint(localisationPoint);}
+            Localise.setPoint(localisationPoint);
+        }
 
         if (gamepad1.dpad_right) {
-                Localise.setPoint(shootingLocalisationPoint);}
+            Localise.setPoint(shootingLocalisationPoint);
+        }
 
         if (gamepad1.squareWasPressed()) {
-            aiming.toggle();}
+            aiming.toggle();
+        }
 
         if (gamepad1.right_trigger_pressed) {
             intake.run();
             transfer.run();
-            shooterBlocker.open();}
-
-        else {
+            shooterBlocker.open();
+        } else {
             shooterBlocker.close();
             intake.stop();
-            transfer.stop();}
+            transfer.stop();
+        }
 
         if (gamepad1.left_trigger_pressed) {
             intake.run();
-            transfer.run();}
-
-        else {
-            transfer.stop();
-            intake.stop();}
-
-        if (gamepad1.right_bumper) {
-            flower.down();}
-
-        else{
-            flower.up();}
-
-
-        // ==================
-        //   Actual Driving
-        // ==================
-
-        double forward = -gamepad1.left_stick_y;
-        double strafe = -gamepad1.left_stick_x;
-        double turn;
-
-        if (aiming.isActive()) {
-            turn = aiming.getTurnPower();
+            transfer.run();
         } else {
-            turn = -gamepad1.right_stick_x;
+            if (gamepad1.left_bumper) {
+                intake.outtake();
+                transfer.outtake();
+            } else {
+                transfer.stop();
+                intake.stop();
+            }}
+
+
+            if (gamepad1.right_bumper) {
+                flower.down();
+            } else {
+                flower.up();
+            }
+
+
+            double forward = -gamepad1.left_stick_y;
+            double strafe = -gamepad1.left_stick_x;
+            double turn;
+
+            if (aiming.isActive()) {
+                turn = aiming.getTurnPower();
+            } else {
+                turn = -gamepad1.right_stick_x;
+            }
+
+            if (!follower.isBusy()) {
+                follower.manual(
+                        forward,
+                        strafe,
+                        turn
+                );
+            }
+
+            follower.update();
+            Pose robotPose = follower.pose();
+
+            double shootingDistance = aimingTargetMath.getDistanceToTarget();
+
+            targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
+
+            nectarTargetHood = shooterLookupTables.getNectarHood(shootingDistance);
+            pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
+
+
+            shooter.setTargetRPM(targetRPM);
+            shooter.update();
+
+            pollenHood.setAngle(pollenTargetHood);
+            nectarHood.setAngle(nectarTargetHood);
+
+
+
+            //  Telemetry
+
+            telemetry.addData("Robot X", robotPose.x());
+            telemetry.addData("Robot Y", robotPose.y());
+            telemetry.addData("Robot Heading", Math.toDegrees(robotPose.heading()));
+            telemetry.addData("Aim Error", Math.toDegrees(aiming.getHeadingError()));
+            telemetry.addData("Robot Target X", aimingTargetMath.getTargetX());
+            telemetry.addData("Robot Target Y", aimingTargetMath.getTargetY());
+            telemetry.addData("Robot Direct Distance from Target", aimingTargetMath.getDistanceToTarget());
+            telemetry.addData("Target RPM of Shooters", targetRPM);
+
+            telemetry.addData("Measured Shooter RPM", "%.0f", shooter.getCurrentRPM());
+            telemetry.addData("Shooter RPM Error", "%+.0f", shooter.getRPMError());
+
+
+            telemetry.addData("Pollen Target Hood", pollenTargetHood);
+            telemetry.addData("Nectar Target Hood", nectarTargetHood);
+
+            telemetry.update();
+
         }
 
-        if (!follower.isBusy()) {
-            follower.manual(
-                    forward,
-                    strafe,
-                    turn
-            );
+
+        @Override
+        public void stop () {
+
+            if (intake != null) {
+                intake.stop();
+            }
+
+            if (transfer != null) {
+                transfer.stop();
+            }
+
+            if (shooter != null) {
+                shooter.stop();
+            }
+
+            if (shooterBlocker != null) {
+                shooterBlocker.close();
+            }
         }
-
-        follower.update();
-        Pose robotPose = follower.pose();
-
-        double shootingDistance = aimingTargetMath.getDistanceToTarget();
-
-        targetRPM = shooterLookupTables.getShooterRPM(shootingDistance);
-
-        nectarTargetHood = shooterLookupTables.getNectarHood(shootingDistance);
-        pollenTargetHood = shooterLookupTables.getPollenHood(shootingDistance);
-
-
-        shooter.setTargetRPM(targetRPM);
-        shooter.update();
-
-        pollenHood.setAngle(pollenTargetHood);
-        nectarHood.setAngle(nectarTargetHood);
-
-
-        // ===================
-        //  Telemetry Values
-        // ===================
-
-        telemetry.addData("Robot X", robotPose.x());
-        telemetry.addData("Robot Y", robotPose.y());
-        telemetry.addData("Robot Heading", Math.toDegrees(robotPose.heading()));
-        telemetry.addData("Aim Error", Math.toDegrees(aiming.getHeadingError()));
-        telemetry.addData("Robot Target X", aimingTargetMath.getTargetX());
-        telemetry.addData("Robot Target Y", aimingTargetMath.getTargetY());
-        telemetry.addData("Robot Direct Distance from Target", aimingTargetMath.getDistanceToTarget());
-        telemetry.addData("Target RPM of Shooters", targetRPM);
-
-        telemetry.addData("Measured Shooter RPM", "%.0f", shooter.getCurrentRPM());
-        telemetry.addData("Shooter RPM Error", "%+.0f", shooter.getRPMError());
-
-
-        telemetry.addData("Pollen Target Hood", pollenTargetHood);
-        telemetry.addData("Nectar Target Hood", nectarTargetHood);
-
-        telemetry.update();
-
     }
-
-
-    @Override
-    public void stop() {
-
-        if (intake != null) {
-            intake.stop();
-        }
-
-        if (transfer != null) {
-            transfer.stop();
-        }
-
-        if (shooter != null) {
-            shooter.stop();
-        }
-
-        if (shooterBlocker != null) {
-            shooterBlocker.close();
-        }
-    }
-}

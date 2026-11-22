@@ -28,9 +28,7 @@ public class AimingTargetMath {
     }
 
 
-    // =========================================
-    // Select North or South target and alliance
-    // =========================================
+    // Select North or South target
 
     public void updateTarget() {
 
@@ -48,9 +46,8 @@ public class AimingTargetMath {
     }
 
 
-    // =========================================
+
     // Target coordinates
-    // =========================================
 
     public double getTargetX() {
         updateTarget();
@@ -64,9 +61,8 @@ public class AimingTargetMath {
     }
 
 
-    // =========================================
     // Distance to target
-    // =========================================
+
 
     public double getDistanceToTarget() {
 
@@ -83,9 +79,7 @@ public class AimingTargetMath {
     }
 
 
-    // =========================================
     // Angle to target
-    // =========================================
 
     public double getAngleToTarget() {
 
@@ -100,9 +94,7 @@ public class AimingTargetMath {
     }
 
 
-    // =========================================
     // X distance to target
-    // =========================================
 
     public double getDeltaX() {
 
@@ -114,9 +106,7 @@ public class AimingTargetMath {
     }
 
 
-    // =========================================
     // Y distance to target
-    // =========================================
 
     public double getDeltaY() {
 
